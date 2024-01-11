@@ -1,8 +1,8 @@
 title: Zach Griebel
-description: A minimal and beautiful Jekyll theme best for writing and note-taking.
+description: Lets see where this is
 author: Zach
-avatar: /logo.png
-email: email!
+avatar: /profile_zg.png
+email: zgriebel01@hamline.edu
 
 plugins:
   - jekyll-seo-tag
@@ -30,14 +30,12 @@ exclude:
 # Jekyll SEO Tag (Optional)
 # =========================
 twitter:
-  username: ngzhio
+  username: zgriebz23
   card: summary
-logo: logo.png
+logo: zg_profile.jpg
 social:
   name: Zach Griebel"
   links:
-    - https://twitter.com/ngzhio
-    - https://www.facebook.com/ngzhio
-    - https://github.com/ngzhio
+    - https://twitter.com/zgriebz23
 google_site_verification: u4WXQl0Eu66rsQo2kRdCNx
 lang: en
