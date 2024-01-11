@@ -1,11 +1,13 @@
-- title: About
-  url: /about/
-- title: Years
-  url: /years/
-- title: Categories
-  url: /categories/
-- title: Tags
-  url: /tags/
+- title: About Me
+  url: /about_me/
+- title: Experience
+  url: /Experience/
+- title: Awards & Achievements
+  url: /awards_and_achievements/
+- title: Resume
+  url: /Resume/
+-title: CV
+  url: /CV/
 - title: More
   sublinks:
     - title: FAQ
