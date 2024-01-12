@@ -1,5 +1,5 @@
 ---
-title: "PS 3 Feature Analysis and Modeling"
+title: "Feature Analysis and Modeling"
 author: "Zach"
 date: '2023-09-24'
 output:
@@ -7,13 +7,20 @@ output:
   html_document: default
 ---
 
+---
+title: "Feature Analysis and Modeling"
+format: html
+editor: visual
+---
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE )
 ```
 
 ```{r}
 library(knitr)
-library(tidyverse)
+suppressWarnings(
+library(tidyverse))
 library(rpart)
 library(caret)
 library(dummy)

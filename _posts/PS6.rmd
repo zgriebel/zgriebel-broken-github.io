@@ -12,11 +12,14 @@ title: "Problem Set 6"
 format: html
 editor: visual
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE )
+```
 
 ```{r}
 #| message: false
 rm(list = ls())
-library(tidyverse)
+suppressWarnings(library(tidyverse))
 library(caret)
 library(performanceEstimation)
 library(PRROC)
