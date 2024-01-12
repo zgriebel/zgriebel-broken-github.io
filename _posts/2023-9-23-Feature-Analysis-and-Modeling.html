@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Zach">
+<meta name="dcterms.date" content="2023-09-24">
+
+<title>PS 3 Feature Analysis and Modeling</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="PS3_files/libs/clipboard/clipboard.min.js"></script>
+<script src="PS3_files/libs/quarto-html/quarto.js"></script>
+<script src="PS3_files/libs/quarto-html/popper.min.js"></script>
+<script src="PS3_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="PS3_files/libs/quarto-html/anchor.min.js"></script>
+<link href="PS3_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="PS3_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="PS3_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="PS3_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="PS3_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">PS 3 Feature Analysis and Modeling</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zach </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 24, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidyverse' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tibble' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidyr' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'readr' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'purrr' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'dplyr' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'forcats' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lubridate' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>-- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
+v dplyr     1.1.2     v readr     2.1.4
+v forcats   1.0.0     v stringr   1.5.1
+v ggplot2   3.4.4     v tibble    3.2.1
+v lubridate 1.9.2     v tidyr     1.3.0
+v purrr     1.0.1     
+-- Conflicts ------------------------------------------ tidyverse_conflicts() --
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()
+i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'caret' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice
+
+Attaching package: 'caret'
+
+The following object is masked from 'package:purrr':
+
+    lift</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dummy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>dummy 0.1.3
+dummyNews()</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cars <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'ToyotaCorolla.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 1436 Columns: 39
+-- Column specification --------------------------------------------------------
+Delimiter: ","
+chr  (3): Model, Fuel_Type, Color
+dbl (36): Id, Price, Age_08_04, Mfg_Month, Mfg_Year, KM, HP, Met_Color, Auto...
+
+i Use `spec()` to retrieve the full column specification for this data.
+i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(cars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,436
+Columns: 39
+$ Id                &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1~
+$ Model             &lt;chr&gt; "TOYOTA Corolla 2.0 D4D HATCHB TERRA 2/3-Doors", "TO~
+$ Price             &lt;dbl&gt; 13500, 13750, 13950, 14950, 13750, 12950, 16900, 186~
+$ Age_08_04         &lt;dbl&gt; 23, 23, 24, 26, 30, 32, 27, 30, 27, 23, 25, 22, 25, ~
+$ Mfg_Month         &lt;dbl&gt; 10, 10, 9, 7, 3, 1, 6, 3, 6, 10, 8, 11, 8, 2, 1, 5, ~
+$ Mfg_Year          &lt;dbl&gt; 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002~
+$ KM                &lt;dbl&gt; 46986, 72937, 41711, 48000, 38500, 61000, 94612, 758~
+$ Fuel_Type         &lt;chr&gt; "Diesel", "Diesel", "Diesel", "Diesel", "Diesel", "D~
+$ HP                &lt;dbl&gt; 90, 90, 90, 90, 90, 90, 90, 90, 192, 69, 192, 192, 1~
+$ Met_Color         &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1~
+$ Color             &lt;chr&gt; "Blue", "Silver", "Blue", "Black", "Black", "White",~
+$ Automatic         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ CC                &lt;dbl&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 1800~
+$ Doors             &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3~
+$ Cylinders         &lt;dbl&gt; 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4~
+$ Gears             &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 5, 5~
+$ Quarterly_Tax     &lt;dbl&gt; 210, 210, 210, 210, 210, 210, 210, 210, 100, 185, 10~
+$ Weight            &lt;dbl&gt; 1165, 1165, 1165, 1165, 1170, 1170, 1245, 1245, 1185~
+$ Mfr_Guarantee     &lt;dbl&gt; 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0~
+$ BOVAG_Guarantee   &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Guarantee_Period  &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 12, 3, 3, 3, 3, 3, 3, ~
+$ ABS               &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Airbag_1          &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Airbag_2          &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Airco             &lt;dbl&gt; 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Automatic_airco   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Boardcomputer     &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0~
+$ CD_Player         &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0~
+$ Central_Lock      &lt;dbl&gt; 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Powered_Windows   &lt;dbl&gt; 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Power_Steering    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Radio             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1~
+$ Mistlamps         &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0~
+$ Sport_Model       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0~
+$ Backseat_Divider  &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0~
+$ Metallic_Rim      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Radio_cassette    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1~
+$ Parking_Assistant &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ Tow_Bar           &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1~</code></pre>
+</div>
+</div>
+<p>There are 38 Variables(not including ID)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(cars<span class="sc">$</span>HP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  90 192  69 110  97  71 116  98  86  72 107  73</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(cars<span class="sc">$</span>HP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1436</code></pre>
+</div>
+</div>
+<p>I do not know much about cars. There appears to be a few standard values for horse power. However, I will have them as a numeric variable because their values relative to each other are significant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cars <span class="ot">&lt;-</span> cars <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Id, <span class="sc">-</span>Model, <span class="sc">-</span>Mfg_Month, <span class="sc">-</span>Cylinders, <span class="sc">-</span>Quarterly_Tax) <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Age =</span> Age_08_04) <span class="sc">%&gt;%</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">vars</span>(<span class="sc">-</span><span class="fu">one_of</span>(</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">'Price'</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">'Age'</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">'KM'</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">'HP'</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">'CC'</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">'Weight'</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  )), <span class="at">.funs =</span> factor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This removed some irrelevant variables. Then set non numeric values to factors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(cars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 1,436
+Columns: 34
+$ Price             &lt;dbl&gt; 13500, 13750, 13950, 14950, 13750, 12950, 16900, 186~
+$ Age               &lt;dbl&gt; 23, 23, 24, 26, 30, 32, 27, 30, 27, 23, 25, 22, 25, ~
+$ Mfg_Year          &lt;fct&gt; 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002, 2002~
+$ KM                &lt;dbl&gt; 46986, 72937, 41711, 48000, 38500, 61000, 94612, 758~
+$ Fuel_Type         &lt;fct&gt; Diesel, Diesel, Diesel, Diesel, Diesel, Diesel, Dies~
+$ HP                &lt;dbl&gt; 90, 90, 90, 90, 90, 90, 90, 90, 192, 69, 192, 192, 1~
+$ Met_Color         &lt;fct&gt; 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1~
+$ Color             &lt;fct&gt; Blue, Silver, Blue, Black, Black, White, Grey, Grey,~
+$ Automatic         &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ CC                &lt;dbl&gt; 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 1800~
+$ Doors             &lt;fct&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3~
+$ Gears             &lt;fct&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 5, 5~
+$ Weight            &lt;dbl&gt; 1165, 1165, 1165, 1165, 1170, 1170, 1245, 1245, 1185~
+$ Mfr_Guarantee     &lt;fct&gt; 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0~
+$ BOVAG_Guarantee   &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Guarantee_Period  &lt;fct&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 12, 3, 3, 3, 3, 3, 3, ~
+$ ABS               &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Airbag_1          &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Airbag_2          &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Airco             &lt;fct&gt; 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Automatic_airco   &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Boardcomputer     &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0~
+$ CD_Player         &lt;fct&gt; 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0~
+$ Central_Lock      &lt;fct&gt; 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Powered_Windows   &lt;fct&gt; 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Power_Steering    &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+$ Radio             &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1~
+$ Mistlamps         &lt;fct&gt; 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0~
+$ Sport_Model       &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0~
+$ Backseat_Divider  &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0~
+$ Metallic_Rim      &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0~
+$ Radio_cassette    &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1~
+$ Parking_Assistant &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ Tow_Bar           &lt;fct&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1~</code></pre>
+</div>
+</div>
+<p>That made the values we want to keep numeric variables and the rest factors. Now lets check them for NAs</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cars <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Price,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>      Age,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>      KM,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>      HP,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>      CC,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>      Weight) <span class="sc">%&gt;%</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Price            Age              KM               HP       
+ Min.   : 4350   Min.   : 1.00   Min.   :     1   Min.   : 69.0  
+ 1st Qu.: 8450   1st Qu.:44.00   1st Qu.: 43000   1st Qu.: 90.0  
+ Median : 9900   Median :61.00   Median : 63390   Median :110.0  
+ Mean   :10731   Mean   :55.95   Mean   : 68533   Mean   :101.5  
+ 3rd Qu.:11950   3rd Qu.:70.00   3rd Qu.: 87021   3rd Qu.:110.0  
+ Max.   :32500   Max.   :80.00   Max.   :243000   Max.   :192.0  
+       CC            Weight    
+ Min.   : 1300   Min.   :1000  
+ 1st Qu.: 1400   1st Qu.:1040  
+ Median : 1600   Median :1070  
+ Mean   : 1577   Mean   :1072  
+ 3rd Qu.: 1600   3rd Qu.:1085  
+ Max.   :16000   Max.   :1615  </code></pre>
+</div>
+</div>
+<p>There appears to not be any NAs in our numeric features.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cars <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(is.factor) <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Mfg_Year    Fuel_Type    Met_Color     Color     Automatic Doors   Gears   
+ 1998:392   CNG   :  17   0:467     Grey   :301   0:1356    2:  2   3:   2  
+ 1999:441   Diesel: 155   1:969     Blue   :283   1:  80    3:622   4:   1  
+ 2000:225   Petrol:1264             Red    :278             4:138   5:1390  
+ 2001:192                           Green  :220             5:674   6:  43  
+ 2002: 87                           Black  :191                             
+ 2003: 75                           Silver :122                             
+ 2004: 24                           (Other): 41                             
+ Mfr_Guarantee BOVAG_Guarantee Guarantee_Period ABS      Airbag_1 Airbag_2
+ 0:848         0: 150          3      :1274     0: 268   0:  42   0: 398  
+ 1:588         1:1286          6      :  77     1:1168   1:1394   1:1038  
+                               12     :  73                               
+                               24     :   4                               
+                               36     :   4                               
+                               13     :   1                               
+                               (Other):   3                               
+ Airco   Automatic_airco Boardcomputer CD_Player Central_Lock Powered_Windows
+ 0:706   0:1355          0:1013        0:1122    0:603        0:629          
+ 1:730   1:  81          1: 423        1: 314    1:833        1:807          
+                                                                             
+                                                                             
+                                                                             
+                                                                             
+                                                                             
+ Power_Steering Radio    Mistlamps Sport_Model Backseat_Divider Metallic_Rim
+ 0:  32         0:1226   0:1067    0:1005      0: 330           0:1142      
+ 1:1404         1: 210   1: 369    1: 431      1:1106           1: 294      
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+                                                                            
+ Radio_cassette Parking_Assistant Tow_Bar 
+ 0:1227         0:1432            0:1037  
+ 1: 209         1:   4            1: 399  
+                                          
+                                          
+                                          
+                                          
+                                          </code></pre>
+</div>
+</div>
+<p>Is appears that there are not any NAs in our factor data as well!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cars <span class="sc">%&gt;%</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Price))<span class="sc">+</span> <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">after_stat</span>(density)), <span class="at">fill =</span> <span class="st">"#AB0000"</span> )<span class="sc">+</span><span class="fu">geom_density</span>()<span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Price of Corrollas"</span>,<span class="at">x =</span> <span class="st">"Price"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Price is appropriate for linear regression because we are analyzing the relationship of variables on a quantitative variable.</p>
+<p>The graph is a bit skewed right. However around the peak of the histogram the distribution is very normal. Then there is a small portion of the data outside of this normal distribution. Given the still relatively normal shape of the graph I believe it is still appropriate to do linear regression without and transformation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>cars <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Price,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>      Age,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>      KM,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>      HP,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>      CC,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>      Weight) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="sc">-</span>Price, <span class="at">key =</span> <span class="st">"var"</span>, <span class="at">value =</span> <span class="st">"value"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> Price)) <span class="sc">+</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span> var, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="2880"></p>
+</div>
+</div>
+<p><code>Age</code> of car and <code>KM</code> accumulated on the Car displayed a negative correlation with <code>Price</code>. Then <code>weight</code> appeared to have a loose correlation with <code>Price</code>. My assumption would be the <code>weight</code> would play a role in the fuel efficiency which is not a variable in this data set.All of these will be analyed further.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'corrplot' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>corrplot 0.92 loaded</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>cars <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(is.numeric) <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cor</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">corrplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><code>Age</code> and <code>KM</code> have a correlation around -.5 this makes sense. As the older the car gets the more miles it is likely to accumulate. This correlation is not strong enough for us to worry, despicably given our background knowledge of the independent importance of each variable. Additionally weight and age are slightly correlated, not much to worry about, however this would most likely be as technology advances the weight of the cars gradually change. HO</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert all factors to dummy vars.</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>car_dum <span class="ot">=</span> <span class="fu">dummy</span>(cars, <span class="at">int =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>car_num <span class="ot">=</span> cars <span class="sc">%&gt;%</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(is.numeric)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>cars <span class="ot">=</span> <span class="fu">bind_cols</span>(car_num, car_dum)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(car_dum, car_num)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>samp <span class="ot">=</span> <span class="fu">createDataPartition</span>(cars<span class="sc">$</span>Price, <span class="at">p =</span> <span class="fl">0.7</span>, <span class="at">list =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>training <span class="ot">=</span> cars[samp, ]</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>testing <span class="ot">=</span> cars[<span class="sc">-</span>samp, ]</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(samp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This seperates are data into training and test data variable</p>
+<p>Eleminating one dumy variable each</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>training_ols <span class="ot">=</span> training <span class="sc">%&gt;%</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Mfg_Year_1998,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Fuel_Type_CNG,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Met_Color_0,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Color_Beige,</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Automatic_0,</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Doors_2,</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Gears_3,</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Mfr_Guarantee_0,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>BOVAG_Guarantee_0,</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Guarantee_Period_13,</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Guarantee_Period_18,</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Guarantee_Period_20,</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Guarantee_Period_24,</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Guarantee_Period_28,</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Guarantee_Period_36,</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>ABS_0,</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Airbag_1_0,</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Airbag_2_0,</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Airco_0,</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Automatic_airco_0,</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Boardcomputer_0,</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>CD_Player_0,</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Central_Lock_0,</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Powered_Windows_0,</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Power_Steering_0,</span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Radio_0,</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Mistlamps_0,</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Sport_Model_0,</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Backseat_Divider_0,</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Metallic_Rim_0,</span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Radio_cassette_0,</span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Parking_Assistant_0,</span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a>         <span class="sc">-</span>Tow_Bar_0</span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We set some parameters to control</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="co"># how the tree grows.</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>ctrl <span class="ot">=</span> rpart<span class="sc">::</span><span class="fu">rpart.control</span>(<span class="at">cp=</span><span class="fl">0.0</span>, </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">minbucket =</span> <span class="dv">1</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>                            <span class="at">maxdepth =</span> <span class="dv">3</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="co"># We actually grow the tree.</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span> .,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> training,</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the tree we grew to get</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a><span class="co"># predicted values.</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(dt, training)</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the RMSE of our tree</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a><span class="co"># on the training data.</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>pred.rmse <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred, <span class="at">obs =</span> training<span class="sc">$</span>Price)</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Print out the error measures</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"Sample Mean:"</span>, <span class="fu">mean</span>(training<span class="sc">$</span>Price))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Sample Mean: 10754.4736842105"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"Sample Stdev:"</span>, <span class="fu">sd</span>(training<span class="sc">$</span>Price))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Sample Stdev: 3660.80912943569"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"Model RMSE:"</span>, pred.rmse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Model RMSE: 1347.34773584362"</code></pre>
+</div>
+</div>
+<p>RMSE is the average error for each point. The average error for this model using training data is $1347</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">=</span> <span class="fu">predict</span>(dt, testing)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>pred.rmse <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred, <span class="at">obs =</span> testing<span class="sc">$</span>Price)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"Model RMSE:"</span>, pred.rmse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Model RMSE: 1446.39125178949"</code></pre>
+</div>
+</div>
+<p>Using testing data the average error is $1446</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the tree we grew.</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>rpart.plot<span class="sc">::</span><span class="fu">rpart.plot</span>(dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This tree is not too complex. It demonstrated how important the <code>Age</code> is, and then we also find results the support some of the other high important features we found such as <code>weight</code> and <code>KM</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create empty vectors to store values.</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>rmse.train <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>rmse.test <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>rmse.cv <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>sim.size <span class="ot">&lt;-</span> <span class="fu">length</span>(training<span class="sc">$</span>Price)</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="re">BEGIN</span><span class="co"> LOOP -----------------------------</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Setup tree growth control parameters</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  ctrl <span class="ot">=</span> rpart<span class="sc">::</span><span class="fu">rpart.control</span>(<span class="at">cp=</span><span class="fl">0.0</span>, </span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">minbucket =</span> <span class="dv">1</span>,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>                            <span class="at">maxdepth =</span> i)</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Grow the tree</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span> .,</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> training,</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Cross validation set</span></span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>  num_folds <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>  cv_vals <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>  fold_seq <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, sim.size, sim.size<span class="sc">/</span>num_folds)</span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="re">BEGIN</span><span class="co"> CV LOOP -----------------------------------------------------</span></span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_folds) {</span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>    fold_rows <span class="ot">=</span> <span class="fu">seq</span>(fold_seq[j], fold_seq[j]<span class="sc">+</span>(sim.size<span class="sc">/</span>num_folds)<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, sim.size, <span class="dv">1</span>) <span class="sc">%in%</span> fold_rows</span>
+<span id="cb50-27"><a href="#cb50-27" aria-hidden="true" tabindex="-1"></a>    current_fold <span class="ot">=</span> training[idx, ]</span>
+<span id="cb50-28"><a href="#cb50-28" aria-hidden="true" tabindex="-1"></a>    remaining <span class="ot">=</span> training[<span class="sc">!</span>idx, ]</span>
+<span id="cb50-29"><a href="#cb50-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Grow tree with specified ctrls</span></span>
+<span id="cb50-30"><a href="#cb50-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># on the non-heldout folds.</span></span>
+<span id="cb50-31"><a href="#cb50-31" aria-hidden="true" tabindex="-1"></a>    cv.dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span>.,</span>
+<span id="cb50-32"><a href="#cb50-32" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> remaining,</span>
+<span id="cb50-33"><a href="#cb50-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb50-34"><a href="#cb50-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb50-35"><a href="#cb50-35" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb50-36"><a href="#cb50-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get predictions on hold-out fold.</span></span>
+<span id="cb50-37"><a href="#cb50-37" aria-hidden="true" tabindex="-1"></a>    pred.cv <span class="ot">=</span> <span class="fu">predict</span>(cv.dt, current_fold)</span>
+<span id="cb50-38"><a href="#cb50-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Evaluate tree performance on hold-out fold</span></span>
+<span id="cb50-39"><a href="#cb50-39" aria-hidden="true" tabindex="-1"></a>    cv_vals[j] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.cv, <span class="at">obs =</span> current_fold<span class="sc">$</span>Price)</span>
+<span id="cb50-40"><a href="#cb50-40" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb50-41"><a href="#cb50-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="re">END</span><span class="co"> CV LOOP --------------------------------------------------------</span></span>
+<span id="cb50-42"><a href="#cb50-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb50-43"><a href="#cb50-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get predictions on training data</span></span>
+<span id="cb50-44"><a href="#cb50-44" aria-hidden="true" tabindex="-1"></a>  pred.train <span class="ot">=</span> <span class="fu">predict</span>(dt, training)</span>
+<span id="cb50-45"><a href="#cb50-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get predictions on testing data</span></span>
+<span id="cb50-46"><a href="#cb50-46" aria-hidden="true" tabindex="-1"></a>  pred.test <span class="ot">=</span> <span class="fu">predict</span>(dt, testing)</span>
+<span id="cb50-47"><a href="#cb50-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Record model performance for training, testing, and cv</span></span>
+<span id="cb50-48"><a href="#cb50-48" aria-hidden="true" tabindex="-1"></a>  rmse.train[i] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.train, <span class="at">obs =</span> training<span class="sc">$</span>Price)</span>
+<span id="cb50-49"><a href="#cb50-49" aria-hidden="true" tabindex="-1"></a>  rmse.test[i] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.test, <span class="at">obs =</span> testing<span class="sc">$</span>Price)</span>
+<span id="cb50-50"><a href="#cb50-50" aria-hidden="true" tabindex="-1"></a>  rmse.cv[i] <span class="ot">=</span> <span class="fu">mean</span>(cv_vals)</span>
+<span id="cb50-51"><a href="#cb50-51" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-52"><a href="#cb50-52" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="re">END</span><span class="co"> LOOP --------------------------------</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize Model Error Over Complexity</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set some colors for our plot.</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RMSE Training"</span> <span class="ot">=</span> <span class="st">"skyblue"</span>, </span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RMSE Testing"</span> <span class="ot">=</span> <span class="st">"coral3"</span>,</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RMSE X-val"</span> <span class="ot">=</span> <span class="st">"aquamarine3"</span>)</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plot.</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> rmse.train, <span class="at">color =</span> <span class="st">"RMSE Training"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> rmse.test, <span class="at">color =</span> <span class="st">"RMSE Testing"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> rmse.cv, <span class="at">color =</span> <span class="st">"RMSE X-val"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> depth[<span class="fu">which</span>(rmse.test <span class="sc">==</span> <span class="fu">min</span>(rmse.test))],</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span></span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">3.75</span>, <span class="at">y=</span><span class="fl">1.85</span>, <span class="at">label=</span><span class="st">"&lt;=== Underfit"</span>), <span class="at">color=</span><span class="st">"darkslategrey"</span>) <span class="sc">+</span></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">6.1</span>, <span class="at">y=</span><span class="fl">1.85</span>, <span class="at">label=</span><span class="st">"Overfit ===&gt;"</span>), <span class="at">color=</span><span class="st">"darkslategrey"</span>) <span class="sc">+</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Prediction Error over Model Complexity"</span>,</span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"RMSE on Training vs X-val vs Testing"</span>,</span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Complexity (Tree Depth)"</span>, </span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Prediction Error"</span>,</span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Legend"</span>) <span class="sc">+</span></span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> colors) <span class="sc">+</span></span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>  ggthemes<span class="sc">::</span><span class="fu">theme_clean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+i Please use `linewidth` instead.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Looks like the best complexity for this model is 5.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(iml)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'iml' was built under R version 4.1.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>lm_predictor <span class="ot">=</span> iml<span class="sc">::</span>Predictor<span class="sc">$</span><span class="fu">new</span>(dt, <span class="at">data =</span> training)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>lm_imp <span class="ot">=</span> iml<span class="sc">::</span>FeatureImp<span class="sc">$</span><span class="fu">new</span>(lm_predictor, <span class="at">loss =</span> <span class="st">"rmse"</span>, <span class="at">compare =</span> <span class="st">"ratio"</span>, <span class="at">n.repetitions =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'bit' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'vroom' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'jsonlite' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'prodlim' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'Formula' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'yaml' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'globals' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ipred' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'pillar' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'glue' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'pROC' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'digest' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'checkmate' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'hardhat' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'colorspace' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'htmltools' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'Matrix' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'plyr' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'timeDate' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'listenv' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'scales' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'gower' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tzdb' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'timechange' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'generics' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'farver' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'cli' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'magrittr' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'crayon' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'fansi' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'data.table' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'hms' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'rpart.plot' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'prediction' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'rlang' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'Metrics' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'fastmap' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'utf8' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'stringi' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'Rcpp' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'vctrs' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tidyselect' was built under R version 4.1.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'xfun' was built under R version 4.1.3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(lm_imp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><code>Age</code> and the other numeric factors appear to be of high importance as suggested by my work earlier. Features of less importance are the weird colors, fuel types, and miscellaneous features.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>results<span class="ot">&lt;-</span>lm_imp<span class="sc">$</span>results</span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>feature</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Age"                 "KM"                  "Weight"             
+ [4] "Mfg_Year_1998"       "Mistlamps_1"         "Central_Lock_0"     
+ [7] "Metallic_Rim_1"      "Powered_Windows_1"   "HP"                 
+[10] "Airco_0"             "Airco_1"             "Mfr_Guarantee_1"    
+[13] "CC"                  "Automatic_airco_0"   "Guarantee_Period_3" 
+[16] "Airbag_2_0"          "Central_Lock_1"      "BOVAG_Guarantee_0"  
+[19] "Color_Black"         "Color_Red"           "CD_Player_0"        
+[22] "Fuel_Type_Petrol"    "Color_Grey"          "Color_White"        
+[25] "Mfg_Year_2003"       "Tow_Bar_0"           "Sport_Model_1"      
+[28] "Color_Green"         "Sport_Model_0"       "Automatic_1"        
+[31] "Radio_1"             "Doors_3"             "BOVAG_Guarantee_1"  
+[34] "Met_Color_1"         "Tow_Bar_1"           "Backseat_Divider_0" 
+[37] "Automatic_0"         "Metallic_Rim_0"      "Mfr_Guarantee_0"    
+[40] "Color_Silver"        "Radio_0"             "Guarantee_Period_24"
+[43] "Power_Steering_0"    "Color_Blue"          "Airbag_1_1"         
+[46] "Mfg_Year_1999"       "Mfg_Year_2000"       "Mfg_Year_2001"      
+[49] "Mfg_Year_2002"       "Mfg_Year_2004"       "Fuel_Type_CNG"      
+[52] "Fuel_Type_Diesel"    "Met_Color_0"         "Color_Beige"        
+[55] "Color_Violet"        "Color_Yellow"        "Doors_2"            
+[58] "Doors_4"             "Doors_5"             "Gears_3"            
+[61] "Gears_4"             "Gears_5"             "Gears_6"            
+[64] "Guarantee_Period_6"  "Guarantee_Period_12" "Guarantee_Period_13"
+[67] "Guarantee_Period_18" "Guarantee_Period_20" "Guarantee_Period_28"
+[70] "Guarantee_Period_36" "ABS_0"               "ABS_1"              
+[73] "Airbag_1_0"          "Airbag_2_1"          "Automatic_airco_1"  
+[76] "Boardcomputer_0"     "Boardcomputer_1"     "CD_Player_1"        
+[79] "Powered_Windows_0"   "Power_Steering_1"    "Mistlamps_0"        
+[82] "Backseat_Divider_1"  "Radio_cassette_0"    "Radio_cassette_1"   
+[85] "Parking_Assistant_0" "Parking_Assistant_1"</code></pre>
+</div>
+</div>
+<p>There are so many columns with little impact I cut out the first 50 because most of them has little influence.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>results_feature <span class="ot">&lt;-</span>results<span class="sc">$</span>feature</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>features_to_remove <span class="ot">&lt;-</span> results_feature[<span class="dv">35</span><span class="sc">:</span><span class="dv">86</span>]</span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>features_to_remove</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Tow_Bar_1"           "Backseat_Divider_0"  "Automatic_0"        
+ [4] "Metallic_Rim_0"      "Mfr_Guarantee_0"     "Color_Silver"       
+ [7] "Radio_0"             "Guarantee_Period_24" "Power_Steering_0"   
+[10] "Color_Blue"          "Airbag_1_1"          "Mfg_Year_1999"      
+[13] "Mfg_Year_2000"       "Mfg_Year_2001"       "Mfg_Year_2002"      
+[16] "Mfg_Year_2004"       "Fuel_Type_CNG"       "Fuel_Type_Diesel"   
+[19] "Met_Color_0"         "Color_Beige"         "Color_Violet"       
+[22] "Color_Yellow"        "Doors_2"             "Doors_4"            
+[25] "Doors_5"             "Gears_3"             "Gears_4"            
+[28] "Gears_5"             "Gears_6"             "Guarantee_Period_6" 
+[31] "Guarantee_Period_12" "Guarantee_Period_13" "Guarantee_Period_18"
+[34] "Guarantee_Period_20" "Guarantee_Period_28" "Guarantee_Period_36"
+[37] "ABS_0"               "ABS_1"               "Airbag_1_0"         
+[40] "Airbag_2_1"          "Automatic_airco_1"   "Boardcomputer_0"    
+[43] "Boardcomputer_1"     "CD_Player_1"         "Powered_Windows_0"  
+[46] "Power_Steering_1"    "Mistlamps_0"         "Backseat_Divider_1" 
+[49] "Radio_cassette_0"    "Radio_cassette_1"    "Parking_Assistant_0"
+[52] "Parking_Assistant_1"</code></pre>
+</div>
+</div>
+<p>I wanted to check with my own human intuition. I Read up and down these as they all logically made sense to be of little importance, which made me feel better about the modeling.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>cars<span class="ot">&lt;-</span> cars[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(cars) <span class="sc">%in%</span> features_to_remove)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>training<span class="ot">&lt;-</span> training[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(training) <span class="sc">%in%</span> features_to_remove)]</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>testing <span class="ot">&lt;-</span> testing[, <span class="sc">-</span><span class="fu">which</span>(<span class="fu">names</span>(testing) <span class="sc">%in%</span> features_to_remove)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Removing those features here.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create empty vectors to store values.</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>rmse.train <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>rmse.test <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>rmse.cv <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>sim.size <span class="ot">&lt;-</span> <span class="fu">length</span>(training<span class="sc">$</span>Price)</span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="re">BEGIN</span><span class="co"> LOOP -----------------------------</span></span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
+<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Setup tree growth control parameters</span></span>
+<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a>  ctrl <span class="ot">=</span> rpart<span class="sc">::</span><span class="fu">rpart.control</span>(<span class="at">cp=</span><span class="fl">0.0</span>, </span>
+<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">minbucket =</span> <span class="dv">1</span>,</span>
+<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a>                            <span class="at">maxdepth =</span> i)</span>
+<span id="cb107-12"><a href="#cb107-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Grow the tree</span></span>
+<span id="cb107-13"><a href="#cb107-13" aria-hidden="true" tabindex="-1"></a>  dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span> .,</span>
+<span id="cb107-14"><a href="#cb107-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> training,</span>
+<span id="cb107-15"><a href="#cb107-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb107-16"><a href="#cb107-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb107-17"><a href="#cb107-17" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb107-18"><a href="#cb107-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb107-19"><a href="#cb107-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Cross validation set</span></span>
+<span id="cb107-20"><a href="#cb107-20" aria-hidden="true" tabindex="-1"></a>  num_folds <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb107-21"><a href="#cb107-21" aria-hidden="true" tabindex="-1"></a>  cv_vals <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb107-22"><a href="#cb107-22" aria-hidden="true" tabindex="-1"></a>  fold_seq <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, sim.size, sim.size<span class="sc">/</span>num_folds)</span>
+<span id="cb107-23"><a href="#cb107-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="re">BEGIN</span><span class="co"> CV LOOP -----------------------------------------------------</span></span>
+<span id="cb107-24"><a href="#cb107-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_folds) {</span>
+<span id="cb107-25"><a href="#cb107-25" aria-hidden="true" tabindex="-1"></a>    fold_rows <span class="ot">=</span> <span class="fu">seq</span>(fold_seq[j], fold_seq[j]<span class="sc">+</span>(sim.size<span class="sc">/</span>num_folds)<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb107-26"><a href="#cb107-26" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, sim.size, <span class="dv">1</span>) <span class="sc">%in%</span> fold_rows</span>
+<span id="cb107-27"><a href="#cb107-27" aria-hidden="true" tabindex="-1"></a>    current_fold <span class="ot">=</span> training[idx, ]</span>
+<span id="cb107-28"><a href="#cb107-28" aria-hidden="true" tabindex="-1"></a>    remaining <span class="ot">=</span> training[<span class="sc">!</span>idx, ]</span>
+<span id="cb107-29"><a href="#cb107-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Grow tree with specified ctrls</span></span>
+<span id="cb107-30"><a href="#cb107-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># on the non-heldout folds.</span></span>
+<span id="cb107-31"><a href="#cb107-31" aria-hidden="true" tabindex="-1"></a>    cv.dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span>.,</span>
+<span id="cb107-32"><a href="#cb107-32" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> remaining,</span>
+<span id="cb107-33"><a href="#cb107-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb107-34"><a href="#cb107-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb107-35"><a href="#cb107-35" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb107-36"><a href="#cb107-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get predictions on hold-out fold.</span></span>
+<span id="cb107-37"><a href="#cb107-37" aria-hidden="true" tabindex="-1"></a>    pred.cv <span class="ot">=</span> <span class="fu">predict</span>(cv.dt, current_fold)</span>
+<span id="cb107-38"><a href="#cb107-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Evaluate tree performance on hold-out fold</span></span>
+<span id="cb107-39"><a href="#cb107-39" aria-hidden="true" tabindex="-1"></a>    cv_vals[j] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.cv, <span class="at">obs =</span> current_fold<span class="sc">$</span>Price)</span>
+<span id="cb107-40"><a href="#cb107-40" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb107-41"><a href="#cb107-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="re">END</span><span class="co"> CV LOOP --------------------------------------------------------</span></span>
+<span id="cb107-42"><a href="#cb107-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb107-43"><a href="#cb107-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get predictions on training data</span></span>
+<span id="cb107-44"><a href="#cb107-44" aria-hidden="true" tabindex="-1"></a>  pred.train <span class="ot">=</span> <span class="fu">predict</span>(dt, training)</span>
+<span id="cb107-45"><a href="#cb107-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get predictions on testing data</span></span>
+<span id="cb107-46"><a href="#cb107-46" aria-hidden="true" tabindex="-1"></a>  pred.test <span class="ot">=</span> <span class="fu">predict</span>(dt, testing)</span>
+<span id="cb107-47"><a href="#cb107-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Record model performance for training, testing, and cv</span></span>
+<span id="cb107-48"><a href="#cb107-48" aria-hidden="true" tabindex="-1"></a>  rmse.train[i] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.train, <span class="at">obs =</span> training<span class="sc">$</span>Price)</span>
+<span id="cb107-49"><a href="#cb107-49" aria-hidden="true" tabindex="-1"></a>  rmse.test[i] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.test, <span class="at">obs =</span> testing<span class="sc">$</span>Price)</span>
+<span id="cb107-50"><a href="#cb107-50" aria-hidden="true" tabindex="-1"></a>  rmse.cv[i] <span class="ot">=</span> <span class="fu">mean</span>(cv_vals)</span>
+<span id="cb107-51"><a href="#cb107-51" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb107-52"><a href="#cb107-52" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="re">END</span><span class="co"> LOOP --------------------------------</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize Model Error Over Complexity</span></span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------------</span></span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Set some colors for our plot.</span></span>
+<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RMSE Training"</span> <span class="ot">=</span> <span class="st">"skyblue"</span>, </span>
+<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RMSE Testing"</span> <span class="ot">=</span> <span class="st">"coral3"</span>,</span>
+<span id="cb108-6"><a href="#cb108-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RMSE X-val"</span> <span class="ot">=</span> <span class="st">"aquamarine3"</span>)</span>
+<span id="cb108-7"><a href="#cb108-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plot.</span></span>
+<span id="cb108-8"><a href="#cb108-8" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)</span>
+<span id="cb108-9"><a href="#cb108-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb108-10"><a href="#cb108-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> rmse.train, <span class="at">color =</span> <span class="st">"RMSE Training"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb108-11"><a href="#cb108-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> rmse.test, <span class="at">color =</span> <span class="st">"RMSE Testing"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb108-12"><a href="#cb108-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> depth, <span class="at">y =</span> rmse.cv, <span class="at">color =</span> <span class="st">"RMSE X-val"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb108-13"><a href="#cb108-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> depth[<span class="fu">which</span>(rmse.test <span class="sc">==</span> <span class="fu">min</span>(rmse.test))],</span>
+<span id="cb108-14"><a href="#cb108-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">"darkgrey"</span>) <span class="sc">+</span></span>
+<span id="cb108-15"><a href="#cb108-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">3.75</span>, <span class="at">y=</span><span class="fl">1.85</span>, <span class="at">label=</span><span class="st">"&lt;=== Underfit"</span>), <span class="at">color=</span><span class="st">"darkslategrey"</span>) <span class="sc">+</span></span>
+<span id="cb108-16"><a href="#cb108-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="fl">6.1</span>, <span class="at">y=</span><span class="fl">1.85</span>, <span class="at">label=</span><span class="st">"Overfit ===&gt;"</span>), <span class="at">color=</span><span class="st">"darkslategrey"</span>) <span class="sc">+</span></span>
+<span id="cb108-17"><a href="#cb108-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Prediction Error over Model Complexity"</span>,</span>
+<span id="cb108-18"><a href="#cb108-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"RMSE on Training vs X-val vs Testing"</span>,</span>
+<span id="cb108-19"><a href="#cb108-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Complexity (Tree Depth)"</span>, </span>
+<span id="cb108-20"><a href="#cb108-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Prediction Error"</span>,</span>
+<span id="cb108-21"><a href="#cb108-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Legend"</span>) <span class="sc">+</span></span>
+<span id="cb108-22"><a href="#cb108-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> colors) <span class="sc">+</span></span>
+<span id="cb108-23"><a href="#cb108-23" aria-hidden="true" tabindex="-1"></a>  ggthemes<span class="sc">::</span><span class="fu">theme_clean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 10 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="PS3_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>After cutting out over half of the variables the tree was refitted. The numbers did not change dirastically. And the complexity of 5 remained constant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create empty vectors to store values.</span></span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>rmse.train <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>rmse.test <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>rmse.cv <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>sim.size <span class="ot">&lt;-</span> <span class="fu">length</span>(training<span class="sc">$</span>Price)</span>
+<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="re">BEGIN</span><span class="co"> LOOP -----------------------------</span></span>
+<span id="cb110-7"><a href="#cb110-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
+<span id="cb110-8"><a href="#cb110-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Setup tree growth control parameters</span></span>
+<span id="cb110-9"><a href="#cb110-9" aria-hidden="true" tabindex="-1"></a>  ctrl <span class="ot">=</span> rpart<span class="sc">::</span><span class="fu">rpart.control</span>(<span class="at">cp=</span><span class="fl">0.0</span>, </span>
+<span id="cb110-10"><a href="#cb110-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">minbucket =</span> <span class="dv">1</span>,</span>
+<span id="cb110-11"><a href="#cb110-11" aria-hidden="true" tabindex="-1"></a>                            <span class="at">maxdepth =</span> <span class="dv">5</span>)</span>
+<span id="cb110-12"><a href="#cb110-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Grow the tree</span></span>
+<span id="cb110-13"><a href="#cb110-13" aria-hidden="true" tabindex="-1"></a>  dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span> .,</span>
+<span id="cb110-14"><a href="#cb110-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> training,</span>
+<span id="cb110-15"><a href="#cb110-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb110-16"><a href="#cb110-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb110-17"><a href="#cb110-17" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb110-18"><a href="#cb110-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb110-19"><a href="#cb110-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Cross validation set</span></span>
+<span id="cb110-20"><a href="#cb110-20" aria-hidden="true" tabindex="-1"></a>  num_folds <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb110-21"><a href="#cb110-21" aria-hidden="true" tabindex="-1"></a>  cv_vals <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb110-22"><a href="#cb110-22" aria-hidden="true" tabindex="-1"></a>  fold_seq <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, sim.size, sim.size<span class="sc">/</span>num_folds)</span>
+<span id="cb110-23"><a href="#cb110-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="re">BEGIN</span><span class="co"> CV LOOP -----------------------------------------------------</span></span>
+<span id="cb110-24"><a href="#cb110-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_folds) {</span>
+<span id="cb110-25"><a href="#cb110-25" aria-hidden="true" tabindex="-1"></a>    fold_rows <span class="ot">=</span> <span class="fu">seq</span>(fold_seq[j], fold_seq[j]<span class="sc">+</span>(sim.size<span class="sc">/</span>num_folds)<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb110-26"><a href="#cb110-26" aria-hidden="true" tabindex="-1"></a>    idx <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, sim.size, <span class="dv">1</span>) <span class="sc">%in%</span> fold_rows</span>
+<span id="cb110-27"><a href="#cb110-27" aria-hidden="true" tabindex="-1"></a>    current_fold <span class="ot">=</span> training[idx, ]</span>
+<span id="cb110-28"><a href="#cb110-28" aria-hidden="true" tabindex="-1"></a>    remaining <span class="ot">=</span> training[<span class="sc">!</span>idx, ]</span>
+<span id="cb110-29"><a href="#cb110-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Grow tree with specified ctrls</span></span>
+<span id="cb110-30"><a href="#cb110-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># on the non-heldout folds.</span></span>
+<span id="cb110-31"><a href="#cb110-31" aria-hidden="true" tabindex="-1"></a>    cv.dt <span class="ot">=</span> <span class="fu">rpart</span>(Price <span class="sc">~</span>.,</span>
+<span id="cb110-32"><a href="#cb110-32" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> remaining,</span>
+<span id="cb110-33"><a href="#cb110-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"anova"</span>,</span>
+<span id="cb110-34"><a href="#cb110-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> ctrl</span>
+<span id="cb110-35"><a href="#cb110-35" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb110-36"><a href="#cb110-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get predictions on hold-out fold.</span></span>
+<span id="cb110-37"><a href="#cb110-37" aria-hidden="true" tabindex="-1"></a>    pred.cv <span class="ot">=</span> <span class="fu">predict</span>(cv.dt, current_fold)</span>
+<span id="cb110-38"><a href="#cb110-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Evaluate tree performance on hold-out fold</span></span>
+<span id="cb110-39"><a href="#cb110-39" aria-hidden="true" tabindex="-1"></a>    cv_vals[j] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.cv, <span class="at">obs =</span> current_fold<span class="sc">$</span>Price)</span>
+<span id="cb110-40"><a href="#cb110-40" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb110-41"><a href="#cb110-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># </span><span class="re">END</span><span class="co"> CV LOOP --------------------------------------------------------</span></span>
+<span id="cb110-42"><a href="#cb110-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb110-43"><a href="#cb110-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get predictions on training data</span></span>
+<span id="cb110-44"><a href="#cb110-44" aria-hidden="true" tabindex="-1"></a>  pred.train <span class="ot">=</span> <span class="fu">predict</span>(dt, training)</span>
+<span id="cb110-45"><a href="#cb110-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get predictions on testing data</span></span>
+<span id="cb110-46"><a href="#cb110-46" aria-hidden="true" tabindex="-1"></a>  pred.test <span class="ot">=</span> <span class="fu">predict</span>(dt, testing)</span>
+<span id="cb110-47"><a href="#cb110-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Record model performance for training, testing, and cv</span></span>
+<span id="cb110-48"><a href="#cb110-48" aria-hidden="true" tabindex="-1"></a>  rmse.train[i] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.train, <span class="at">obs =</span> training<span class="sc">$</span>Price)</span>
+<span id="cb110-49"><a href="#cb110-49" aria-hidden="true" tabindex="-1"></a>  rmse.test[i] <span class="ot">=</span> caret<span class="sc">::</span><span class="fu">RMSE</span>(<span class="at">pred =</span> pred.test, <span class="at">obs =</span> testing<span class="sc">$</span>Price)</span>
+<span id="cb110-50"><a href="#cb110-50" aria-hidden="true" tabindex="-1"></a>  rmse.cv[i] <span class="ot">=</span> <span class="fu">mean</span>(cv_vals)</span>
+<span id="cb110-51"><a href="#cb110-51" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb110-52"><a href="#cb110-52" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="re">END</span><span class="co"> LOOP --------------------------------</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>rmse.train[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1038.042</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>rmse.test[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1169.218</code></pre>
+</div>
+</div>
+<p>The cross Validation error using our training data was a RMSE of 1038. This means the average error of the model from the training data was $1038. The RMSE of the model when using the test data with optimum complexity has an average error of $1169.</p>
+<p>This result tells us our model with real corolla data should preform with an an average error of $1169.</p>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
