@@ -1,12 +1,15 @@
 ---
 layout: page
-title: About
+title: About Me
 permalink: /about_me/
 ---
 
+<p align="right">
 
+<img src="Electron Microscope-169.jpg"/>
 
-![](Electron Microscope-169.jpg)
-I am a recent Computational Data Science and Physics graduate from Hamline University in St. Paul. I am a passionate and creative data scientist along with a charismatic leader who loves to learn. I have 2.5 years of internship and research experience in data science and software development where I made significant contributions to my organizations.
+</p>
 
-Personal - I enjoy being outdoors, trying new things, and am unfortunately a die hard Minnesota sports fan.
+I am a recent Computational Data Science and Physics graduate from Hamline University in St. Paul. I am a passionate and creative data scientist along with a charismatic leader who loves to learn. I have 2.5 years of [internship and research experience](https://zgriebel.github.io/Experience/) with data science and software development where my skill set has made significant contributions to each organization.
+
+Personal - I enjoy being outdoors, traveling, and am unfortunately a die hard Minnesota sports fan.
