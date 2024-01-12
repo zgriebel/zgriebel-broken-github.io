@@ -1,0 +1,227 @@
+---
+title: "Bank Regression Modeling"
+author: "Zach"
+date: '2023-11-14'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+---
+title: "Problem Set 6"
+format: html
+editor: visual
+---
+
+```{r}
+#| message: false
+rm(list = ls())
+library(tidyverse)
+library(caret)
+library(performanceEstimation)
+library(PRROC)
+library(rpart)
+```
+
+```{r}
+#| message: false
+# Read in data and remove unneccessary features
+bank = read_csv("UniversalBank.csv") %>%
+  select(-ID, -`ZIP Code`, -Experience) %>%
+  rename(Loan = `Personal Loan`,
+         Securities = `Securities Account`,
+         CD = `CD Account`) %>%
+  mutate(Loan = factor(Loan)) %>%
+  mutate_at(vars(Education), .funs = factor)
+
+```
+
+Below we can check for missing data.
+
+```{r}
+# MISSING DATA
+# =============
+# Calculate percent of missing values for features
+missing_df =  as.numeric(purrr::map(bank, ~mean(is.na(.))))*100
+# Assign values to data frame for easy viewing
+df = data.frame(PercentMissing = missing_df,
+                row.names = names(bank)) %>%
+  arrange(desc(PercentMissing))
+
+print(df)
+```
+
+Fortunately, we don't have any missing values.
+
+## Partition Data
+
+```{r}
+# Partition the Data
+set.seed(453)
+idx = createDataPartition(bank$Loan, p = 0.7, list = FALSE)
+train = bank[idx, ]
+test = bank[-idx, ]
+rm(idx)
+```
+
+#### Address Class Imbalance
+
+```{r}
+# Address class imbalance
+table(train$Loan)
+```
+
+```{r}
+balanced_train = smote(Loan ~ .,
+              data = train,
+              perc.over = 7,
+              perc.under = 1.3)
+table(balanced_train$Loan)
+```
+
+## Best Tuned Decision Tree
+
+```{r}
+# training and evaluation process
+ctrl = caret::trainControl(method = "cv", number = 5)
+set.seed(345)
+tree = train(Loan ~ .,
+             data = balanced_train,
+             method = "rpart",
+             metric = "Kappa",
+             trControl = ctrl,
+             tuneGrid = expand.grid(cp = seq(0.0, 0.2, 0.01)),
+             control = rpart.control(minsplit = 1, minbucket = 1, maxdepth = 8)
+             )
+
+plot(tree)
+```
+
+The drop off occurs at .06 complexity. This is the complexity we will use moving forward.
+
+```{r, fig.width=15 }
+library(rpart.plot)
+prp(tree$finalModel)
+```
+
+## Best Tuned Random Forest
+
+```{r}
+set.seed(345)
+forest = train(Loan ~ .,
+                        data = balanced_train,
+                        method = "rf",
+                        metric = "Kappa",
+                        trControl = ctrl,
+                        ntree = 50,
+                        tuneGrid = expand.grid(.mtry = seq(2,8,1))
+                      )
+
+plot(forest)
+```
+
+We will use the model with 4 randomly selected predictors.
+
+## Best Tuned Boosting (Adaboost / Gradient Boosting)
+
+The below chunk was preformed previously and took a long time. It will be saved and loaded in
+
+```{r}
+#boost_grid = expand.grid(
+#  maxdepth = c(4,5,6,7,8),
+# iter = c(100,150,200),
+#nu = 0.5)
+
+#boost_ctrl = trainControl(method = "cv",
+#                          number = 5,
+#                         allowParallel = TRUE)
+#set.seed(345)
+#boosted_trees = train(Loan ~ .,
+#                     data = balanced_train,
+#                      trControl = boost_ctrl
+#                      tuneGrid = boost_grid,
+#                     method = "ada",
+#                      metric = "Kappa")
+```
+
+```{r}
+#saveRDS(boosted_trees, file = 'boosted_trees_rds.rds')
+```
+
+```{r}
+boosted_trees1<-readRDS( 'boosted_trees_rds.rds')
+```
+
+```{r}
+plot(boosted_trees1)
+```
+
+## Compare Precision and Sensitivity
+
+```{r}
+# Convert Y in test data to numeric 0, 1.
+test = mutate(test, Loan = as.numeric(ifelse(Loan=="1", 1, 0)))
+
+# Create explainers
+tree_explain = DALEX::explain(tree,
+                              data = test,
+                              y = test$Loan,
+                              type = "classification",
+                              label = "Decision Tree")
+
+forest_explain = DALEX::explain(forest,
+                                data = test,
+                                y = test$Loan,
+                                type = "classification",
+                                label = "Random Forest")
+
+adaboost_explain = DALEX::explain(boosted_trees1,
+                                  data = test,
+                                  y = test$Loan,
+                                  type = "classification",
+                                  label = "AdaBoost")
+```
+
+```{r}
+# Model Performance
+tree_perf = DALEX::model_performance(tree_explain)
+forest_perf = DALEX::model_performance(forest_explain)
+adaboost_perf = DALEX::model_performance(adaboost_explain)
+
+# Plot the Precision Recall Curve
+plot(tree_perf, forest_perf, adaboost_perf, geom = 'prc')
+```
+
+Random Forest and AdaBoost preform very similarly, but the decision tree model preforms slightly worst.
+
+## ROC Plot and Comparing AUC
+
+```{r}
+# Plot the ROC
+plot(tree_perf, forest_perf, adaboost_perf, geom = 'roc')
+```
+
+Same results on the ROC. Random Forest performs slightly worst than AdaBoost and Decision Tree.
+
+```{r}
+# Compare the AUCs
+matrix(c("Model",
+         "Decision Tree", 
+         "Random Forest",
+         "Adaboost", 
+         "AUC",
+         round(tree_perf$measures$auc,3),
+         round(forest_perf$measures$auc, 3),
+         round(adaboost_perf$measures$auc, 3)),
+       ncol = 2)
+```
+
+Random Forest and Adaboost have identical AUCs. Random Forrest took a lot less computational resources to produce the model so therefor the best model for this classification problem is determined to be the Random Forest.
+
+Partitioning Data
+
+In order to have correct and ethical models it is critical to partition data. If models were given partitioned data it would lead to over fitting. This is when the model fits the training data too well. The models effectiveness would be measured using data it has already seen. This is an issue because it gives a false illusion of confidence. This can lead to decisions being misadvised and incorrect evaluation of risks. Additionally, in some situations it could be ethical as well. If a model makes money based on performance and the measured performance is illegitimate that is knowingly lying to consumers.
+
+Bagging and Ensemble
+
+This type of modeling uses many small "weak learning" models all combined into one "strong learning" model. The largest benefit is we essentially have the efforts of many models being trained individually combining into one. This decreases the chances of issues from randomization because there are so many models. With so many different models their is less also of a chance of over fitting as well.
