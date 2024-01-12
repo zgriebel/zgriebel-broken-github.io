@@ -1,7 +1,7 @@
 ---
 layout: page
-title: About Me
-permalink: /about_me/
+title: Experience
+permalink: /Experience/
 ---
 
 ![](fabconLogo.png)
