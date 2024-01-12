@@ -3,7 +3,6 @@ title: "Classification Modeling"
 author: "Zach"
 date: '2023-10-09'
 output:
-  pdf_document: default
   html_document: default
 ---
 ---
@@ -24,6 +23,7 @@ rm(list = ls())
 ```
 
 ```{r}
+library(knitr)
 library(tidyverse)
 library(rpart)
 library(caret)

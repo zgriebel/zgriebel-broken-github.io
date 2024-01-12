@@ -3,8 +3,8 @@ title: "Feature Analysis and Modeling"
 author: "Zach"
 date: '2023-09-24'
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ---
