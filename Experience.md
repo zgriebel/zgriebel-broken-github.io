@@ -4,6 +4,9 @@ title: Experience
 permalink: /Experience/
 ---
 
+### Languages
+Experienced in R, Python, and SQL
+
 ![](fabconLogo.png)
 
 ### [Fabcon](https://fabconprecast.com/) / Material Engineer Intern
