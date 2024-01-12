@@ -1,10 +1,15 @@
 ---
-title: "PS 4 Classification Modeling"
+title: "Classification Modeling"
 author: "Zach"
 date: '2023-10-09'
 output:
   pdf_document: default
   html_document: default
+---
+---
+title: "Classification Modeling"
+format: html
+editor: visual
 ---
 
 Classification means when the prediction is not a statistical number. In this case the prediction a category. The NVO case has the prediction being if a person responds to mailing which is a category.
@@ -14,7 +19,7 @@ The benefit of using modeling would be to focus resources on opportunities with 
 The most important for evaluating these models is Precision and Sensitivity. Precision(Pos pred values) the model says yes, how often is that correct. We are looking to identify potential Yes. We want to utilize our resources on correct yes responses. Sensitivity is the rate of true positives captured by the program.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE )
 rm(list = ls())
 ```
 
@@ -22,7 +27,8 @@ rm(list = ls())
 library(tidyverse)
 library(rpart)
 library(caret)
-library(DALEX)
+suppressWarnings(
+library(DALEX))
 library(ggthemes)
 library(pROC)
 library(patchwork)
@@ -178,6 +184,11 @@ smote_tree = caret::train(respondedMailing ~ .,
 
 plot(smote_tree)
 ```
+
+```{r}
+smote_tree
+```
+
 
 Best Kappa is at .9
 
