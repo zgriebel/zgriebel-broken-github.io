@@ -6,12 +6,8 @@ permalink: /Awards-and-Achievements/
 
 <figure style="float: left">
   <img src= "/prez_miller.jpg" width="300" style="padding:5px">
-  <figcaption style="text-align: center"><small>Hamline University President - Fayneese Miller and I \n after our team's historic win on Senior Night</small></figcaption>
+  <figcaption style="text-align: center"><small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small></figcaption>
   </figure>
-
-
-
-
 -   Awarded Fulforf-Karp Physics Scholarship
 
 -   Awarded Kent H. Bracewell Research Scholarship
@@ -24,6 +20,8 @@ permalink: /Awards-and-Achievements/
 
 -   Elected Hamline Football Captain at 20 years old
  
+
+
 
 <figure style="float: right">
   <img src="/mr_focke.jpg" width="350" style="padding:5px"/>
