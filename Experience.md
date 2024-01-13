@@ -6,7 +6,7 @@ permalink: /Experience/
 
 ### Languages
 
-Experienced in R, Python, and SQL
+Experienced in R, Python, and SQL. See [home page](https://zgriebel.github.io) for examples of my work.
 
 <img src="/fabconLogo.png" width="50" align="left" style="padding:5px"/>
 
