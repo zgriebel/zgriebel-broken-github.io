@@ -3,10 +3,11 @@ layout: page
 title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
-<figure>
+#<figure>
 <img src="/prez_miller.jpg" width="300"  align="left" style= "padding:5px">
-<figcaption> Hamline Univesity President - Fayneese Miller and I after our teams historic win on senior night. 
-</figure>
+#<figcaption> Hamline Univesity President - Fayneese Miller and I after our teams historic win on senior night. 
+#</figure>
+
 -   Awarded Fulforf-Karp Physics Scholarship
 
 -   Awarded Kent H. Bracewell Research Scholarship
@@ -18,9 +19,9 @@ permalink: /Awards-and-Achievements/
 -   MIAC Academic All-Conference all 6 eligible semesters
 
 -   Elected Hamline Football Captain at 20 years old
-<figure>
+#<figure>
 <img src="/mr_focke.png" width="300"  align="right" style= "padding:5px">
-<figcaption>Teammates and I with Hamline UNiversity Vice President and Athletic Director - Alex Focke.</figcaption> 
+#<figcaption>Teammates and I with Hamline UNiversity Vice President and Athletic Director - Alex Focke.</figcaption> 
 
 -   During time as captain:
 
@@ -38,4 +39,4 @@ permalink: /Awards-and-Achievements/
 
     -   Awarded team "Most Courageous" award
 
-![We host some of our out of state athletes and coaches at my families house for holidays. - Easter 2023 -](IMG_2138.jpg)
+
