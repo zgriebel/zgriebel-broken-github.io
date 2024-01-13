@@ -4,7 +4,7 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-<img src="/prez_miller.jpg" width="300" align="left" style="padding:15px"/>
+<img src="/prez_miller.jpg" width="300" align="left" style="padding:20px"/>
 
 -   Awarded Fulforf-Karp Physics Scholarship
 
@@ -21,7 +21,6 @@ permalink: /Awards-and-Achievements/
 <img src="/mr_focke.jpg" width="300" align="right" style="padding:5px"/>
 
 #### During time as captain:
-
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
 -   2nd Most wins in 20 Years
