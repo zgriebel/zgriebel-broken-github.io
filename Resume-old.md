@@ -4,4 +4,4 @@ title: Resume
 permalink: /Resume/
 ---
 
- [PDF](./Zach-Griebel-Resume-1-12.pdf)
+ [Click here to view my resume as a PDF](./Zach-Griebel-Resume-1-12.pdf)
