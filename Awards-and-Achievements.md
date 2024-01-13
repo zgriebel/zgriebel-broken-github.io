@@ -4,8 +4,10 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-<figure>
-  <img src="/prez_miller.jpg" width="300" align="left" style="padding:25px" alt="my alt text" />
+<figure style="float: left">
+  <img src= "/prez_miller.jpg" width="300" style="padding:25px">
+  <figcaption style="text-align: center">Charles Dickens<br><small>Image courtesy of CharlieArt</small></figcaption>
+  </figure>
 
 
 
@@ -22,8 +24,6 @@ permalink: /Awards-and-Achievements/
 
 -   Elected Hamline Football Captain at 20 years old
  
-<figcaption  style="text-align: center">This is my caption text.</figcaption>
-</figure>
 
 
 <img src="/mr_focke.jpg" width="350" align="right" style="padding:5px"/>
