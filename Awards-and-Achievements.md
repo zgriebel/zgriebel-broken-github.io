@@ -4,7 +4,7 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-<img src="/prez_miller.jpg" width="300"  align="left" style= "padding:5px">
+<img src="/prez_miller.jpg" width="300" align="left" style="padding:5px"/>
 
 -   Awarded Fulforf-Karp Physics Scholarship
 
@@ -18,24 +18,21 @@ permalink: /Awards-and-Achievements/
 
 -   Elected Hamline Football Captain at 20 years old
 
-<img src="/mr_focke.jpg" width="300"  align="right" style= "padding:5px">
+<img src="/mr_focke.jpg" width="300" align="right" style="padding:10px"/>
 
+```         
+- During time as captain:
+-   Team won the "Piper Cup" - Athletic Department award for community service and support
 
+-   2nd Most wins in 20 Years
 
--   During time as captain:
+-   Team achieved our GPA goal every semester
 
-    -   Team won the "Piper Cup" - Athletic Department award for community service and support
+-   Largest recruiting class in program history
 
-    -   2nd Most wins in 20 Years
+-   Personally recruited over 40% of team's current roster
 
-    -   Team achieved our GPA goal every semester
+-   Awarded team "Most Committed" award
 
-    -   Largest recruiting class in program history
-
-    -   Personally recruited over 40% of team's current roster
-
-    -   Awarded team "Most Committed" award
-
-    -   Awarded team "Most Courageous" award
-
-
+-   Awarded team "Most Courageous" award
+```
