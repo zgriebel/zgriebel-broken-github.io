@@ -20,8 +20,8 @@ permalink: /Awards-and-Achievements/
 
 -   Elected Hamline Football Captain at 20 years old
 #<figure>
-<img src="/mr_focke.png" width="300"  align="right" style= "padding:5px">
-#<figcaption>Teammates and I with Hamline UNiversity Vice President and Athletic Director - Alex Focke.</figcaption> 
+<img src="/mr_focke.jpg" width="300"  align="right" style= "padding:5px">
+#<figcaption>Teammates and I with Hamline UNiversity Vice President and Athletic Director - Alex #Focke.</figcaption> 
 
 -   During time as captain:
 
