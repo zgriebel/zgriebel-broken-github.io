@@ -5,10 +5,8 @@ permalink: /Awards-and-Achievements/
 ---
 
 <figure>
-  <figcaption  style="text-align: center">This is my caption text.</figcaption>
   <img src="/prez_miller.jpg" width="300" align="left" style="padding:25px" alt="my alt text" />
 
-</figure>
 
 
 
@@ -23,8 +21,10 @@ permalink: /Awards-and-Achievements/
 -   MIAC Academic All-Conference all 6 eligible semesters
 
 -   Elected Hamline Football Captain at 20 years old
+ <figcaption  style="text-align: center">This is my caption text.</figcaption>
 
 <img src="/mr_focke.jpg" width="350" align="right" style="padding:5px"/>
+</figure>
 
 #### During time as captain:
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
