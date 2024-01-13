@@ -4,7 +4,9 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-figure class="image">
+
+
+<figure class="image">
   <img src="/prez_miller.jpg" width="300" align="left" style="padding:25px"/>
   <figcaption>{{ test capation! }}</figcaption>
 </figure>

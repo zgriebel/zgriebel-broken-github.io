@@ -8,6 +8,8 @@ permalink: /Experience/
 
 Experienced in R, Python, and SQL. See [home page](https://zgriebel.github.io) for examples of my work.
 
+### Intern Experience
+
 <img src="/fabconLogo.png" width="50" align="left" style="padding:5px"/>
 
 ### [Fabcon](https://fabconprecast.com/) / Material Engineer Intern
@@ -26,9 +28,7 @@ Developed material design that reduces Carbon Emissions by 12% with equivalent p
 
 Lead medical research to replace grip-strength evaluation with an alternate, remote method. With team, designed prototype, collected data, and provided statistical analysis and modeling.
 
-Lead author of peer-reviewed
-
-[research](https://www.tridhascholars.org/pdfs/a-pilot-study-for-at-home-measurement-of-grip-strength-via-telemedicine-JOCCR-6-S11-1063.pdf) published in Journal of Clinical Cases & Reports, where our statistical analysis combated current grip-strength literature. Model and prototype is statistically classified as "reliable" by the American Medical Association standards.
+Lead author of peer-reviewed [research](https://www.tridhascholars.org/pdfs/a-pilot-study-for-at-home-measurement-of-grip-strength-via-telemedicine-JOCCR-6-S11-1063.pdf) published in Journal of Clinical Cases & Reports, where our statistical analysis combated current grip-strength literature. Model and prototype is statistically classified as "reliable" by the American Medical Association standards.
 
 ### <img src="/ratefast_logo.png" width="50" align="left" style="padding:5px"/>  [RateFast](https://www.rate-fast.com/) / Quality Assurance Intern
 
