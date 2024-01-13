@@ -6,7 +6,7 @@ permalink: /Awards-and-Achievements/
 
 <figure>
   <img src="/prez_miller.jpg" width="300" align="left" style="padding:25px" alt="my alt text" />
-  <figcaption  text-align= "right">This is my caption text.</figcaption>
+  <figcaption  class="figure-caption text-center">This is my caption text.</figcaption>
 </figure>
 
 
