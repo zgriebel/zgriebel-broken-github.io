@@ -21,10 +21,13 @@ permalink: /Awards-and-Achievements/
 -   MIAC Academic All-Conference all 6 eligible semesters
 
 -   Elected Hamline Football Captain at 20 years old
- <figcaption  style="text-align: center">This is my caption text.</figcaption>
+ 
+<figcaption  style="text-align: center">This is my caption text.</figcaption>
+</figure>
+
 
 <img src="/mr_focke.jpg" width="350" align="right" style="padding:5px"/>
-</figure>
+
 
 #### During time as captain:
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
