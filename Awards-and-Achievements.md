@@ -4,12 +4,11 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-
-
-<figure class="image">
-  <img src="/prez_miller.jpg" width="300" align="left" style="padding:25px"/>
-  <figcaption>{{ test capation! }}</figcaption>
+<figure>
+  <img src="/prez_miller.jpg" width="300" align="left" style="padding:25px" alt="my alt text"/>
+  <figcaption>This is my caption text.</figcaption>
 </figure>
+
 
 
 -   Awarded Fulforf-Karp Physics Scholarship
