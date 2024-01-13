@@ -5,28 +5,30 @@ permalink: /Awards-and-Achievements/
 ---
 
 <figure style="float: left">
-  <img src= "/prez_miller.jpg" width="300" style="padding:25px">
-  <figcaption style="text-align: center">Charles Dickens<br><small>Image courtesy of CharlieArt</small></figcaption>
+  <img src= "/prez_miller.jpg" width="300" style="padding:5px">
+  <figcaption style="text-align: center"><small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small></figcaption>
   </figure>
 
 
 
 
--   Awarded Fulforf-Karp Physics Scholarship
+    -   Awarded Fulforf-Karp Physics Scholarship
 
--   Awarded Kent H. Bracewell Research Scholarship
+    -   Awarded Kent H. Bracewell Research Scholarship
 
--   Award Rene and Brian McCoy Research Monarch Scholarship
+    -   Award Rene and Brian McCoy Research Monarch Scholarship
 
--   Deans List all 8 semesters
+    -   Deans List all 8 semesters
 
--   MIAC Academic All-Conference all 6 eligible semesters
+    -   MIAC Academic All-Conference all 6 eligible semesters
 
--   Elected Hamline Football Captain at 20 years old
+    -   Elected Hamline Football Captain at 20 years old
  
 
-
-<img src="/mr_focke.jpg" width="350" align="right" style="padding:5px"/>
+<figure style="float: right">
+  <img src="/mr_focke.jpg" width="350" style="padding:5px"/>
+  <figcaption style="text-align: center"><small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small></figcaption>
+  </figure>
 
 
 #### During time as captain:
