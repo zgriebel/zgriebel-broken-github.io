@@ -4,9 +4,9 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-<figure style="float: left">
+<figure style="float: left" "position: absolute; right: 20px">
 
-<img src="/prez_miller.jpg" width="300" "position: absolute; right: 20px"/>
+<img src="/prez_miller.jpg" width="300"/>
 
 <figcaption style="text-align: left">
 
