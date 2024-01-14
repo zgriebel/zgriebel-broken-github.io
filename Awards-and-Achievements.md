@@ -16,9 +16,9 @@ permalink: /Awards-and-Achievements/
 
 </figure>
 
-**.** Awarded Fulforf-Karp Physics Scholarship
+-   Awarded Fulforf-Karp Physics Scholarship
 
-. Awarded Kent H. Bracewell Research Scholarship
+-   Awarded Kent H. Bracewell Research Scholarship
 
 . Award Rene and Brian McCoy Research Monarch Scholarship
 
