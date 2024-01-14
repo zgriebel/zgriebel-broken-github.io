@@ -5,9 +5,15 @@ permalink: /Awards-and-Achievements/
 ---
 
 <figure style="float: left">
-  <img src= "/prez_miller.jpg" width="300" style="padding:5px">
-  <figcaption style="text-align: center"><small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small></figcaption>
-  </figure>
+
+<img src="/prez_miller.jpg" width="300" style="padding:5px"/>
+
+<figcaption style="text-align: center">
+
+<small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small>
+
+</figcaption></figure>
+
 -   Awarded Fulforf-Karp Physics Scholarship
 
 -   Awarded Kent H. Bracewell Research Scholarship
@@ -19,17 +25,10 @@ permalink: /Awards-and-Achievements/
 -   MIAC Academic All-Conference all 6 eligible semesters
 
 -   Elected Hamline Football Captain at 20 years old
- 
-
-
-
-<figure style="float: right">
-  <img src="/mr_focke.jpg" width="350" style="padding:5px"/>
-  <figcaption style="text-align: center"><small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small></figcaption>
-  </figure>
 
 
 #### During time as captain:
+
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
 -   2nd Most wins in 20 Years
@@ -43,3 +42,13 @@ permalink: /Awards-and-Achievements/
 -   Awarded team "Most Committed" award
 
 -   Awarded team "Most Courageous" award
+
+figure style="float: right">
+
+<img src="/mr_focke.jpg" width="350" style="padding:5px"/>
+
+<figcaption style="text-align: center">
+<small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small>
+</figcaption>
+</figure>
+
