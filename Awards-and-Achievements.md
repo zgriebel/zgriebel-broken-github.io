@@ -30,7 +30,7 @@ permalink: /Awards-and-Achievements/
 
 #### During time as captain:
 
-<figure style="float: right">
+<figure style="float: left">
 
 <img src="/mr_focke.jpg" width="350" style="padding:5px"/>
 
