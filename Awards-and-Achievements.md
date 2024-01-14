@@ -27,7 +27,18 @@ permalink: /Awards-and-Achievements/
 -   Elected Hamline Football Captain at 20 years old
 
 
+
 #### During time as captain:
+
+<figure style="float: right">
+
+<img src="/mr_focke.jpg" width="350" style="padding:5px"/>
+
+<figcaption style="text-align: center">
+<small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small>
+</figcaption>
+</figure>
+
 
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
@@ -42,13 +53,4 @@ permalink: /Awards-and-Achievements/
 -   Awarded team "Most Committed" award
 
 -   Awarded team "Most Courageous" award
-
-figure style="float: right">
-
-<img src="/mr_focke.jpg" width="350" style="padding:5px"/>
-
-<figcaption style="text-align: center">
-<small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small>
-</figcaption>
-</figure>
 
