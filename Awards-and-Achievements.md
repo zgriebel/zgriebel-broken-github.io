@@ -6,9 +6,9 @@ permalink: /Awards-and-Achievements/
 
 <figure style="float: left">
 
-<img src="/prez_miller.jpg" width="300" style="padding:5px"/>
+<img src="/prez_miller.jpg" width="300" style="padding:20px"/>
 
-<figcaption style="text-align: center">
+<figcaption style="text-align: left">
 
 <small>Hamline University President - Fayneese Miller and I <br />after our team's historic win on Senior Night</small>
 
@@ -30,12 +30,12 @@ permalink: /Awards-and-Achievements/
 
 #### During time as captain:
 
-<figure style="float: left">
+<figure style="float: right">
 
 <img src="/mr_focke.jpg" width="350" style="padding:5px"/>
 
-<figcaption style="text-align: center">
-<small>Hamline University President - Fayneese Miller and I \ after our team's historic win on Senior Night</small>
+<figcaption style="text-align: right">
+<small>My teammates and I with Hamline University <br />Vice president and Athletic Director - Alex Focke</small>
 </figcaption>
 </figure>
 
