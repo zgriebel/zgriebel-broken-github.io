@@ -10,7 +10,8 @@ permalink: /Awards-and-Achievements/
 
 <figcaption style="text-align: center">
 
-<small>Hamline University President - Fayneese Miller and I after our team's historic win on Senior Night</small>
+<small>Hamline University President - Fayneese Miller and I 
+after our team's historic win on Senior Night</small>
 
 </figcaption></figure>
 
