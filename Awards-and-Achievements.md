@@ -12,21 +12,21 @@ permalink: /Awards-and-Achievements/
 
 <small>Hamline University President - Fayneese Miller and I <br />after our team's historic win on Senior Night</small>
 
-</figcaption></figure>
+</figcaption>
 
-  . Awarded Fulforf-Karp Physics Scholarship
+</figure>
 
-  . Awarded Kent H. Bracewell Research Scholarship
+**.** Awarded Fulforf-Karp Physics Scholarship
 
-  . Award Rene and Brian McCoy Research Monarch Scholarship
+. Awarded Kent H. Bracewell Research Scholarship
 
-  . Deans List all 8 semesters
+. Award Rene and Brian McCoy Research Monarch Scholarship
 
-  . MIAC Academic All-Conference all 6 eligible semesters
+. Deans List all 8 semesters
 
-  . Elected Hamline Football Captain at 20 years old
+. MIAC Academic All-Conference all 6 eligible semesters
 
-
+. Elected Hamline Football Captain at 20 years old
 
 #### During time as captain:
 
@@ -35,10 +35,12 @@ permalink: /Awards-and-Achievements/
 <img src="/mr_focke.jpg" width="350" style="padding:2px"/>
 
 <figcaption style="text-align: right">
-<small>My teammates and I with Hamline University <br />Vice president and Athletic Director - Alex Focke</small>
-</figcaption>
-</figure>
 
+<small>My teammates and I with Hamline University <br />Vice president and Athletic Director - Alex Focke</small>
+
+</figcaption>
+
+</figure>
 
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
@@ -53,4 +55,3 @@ permalink: /Awards-and-Achievements/
 -   Awarded team "Most Committed" award
 
 -   Awarded team "Most Courageous" award
-
