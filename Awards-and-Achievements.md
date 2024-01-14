@@ -6,7 +6,7 @@ permalink: /Awards-and-Achievements/
 
 <figure style="float: left">
 
-<img src="/prez_miller.jpg" width="300" style="padding:5px"/>
+<img src="/prez_miller.jpg" width="300" "position: absolute; right: 20px"/>
 
 <figcaption style="text-align: left">
 
@@ -16,7 +16,7 @@ permalink: /Awards-and-Achievements/
 
 </figure>
 
-                    - Awarded Fulforf-Karp Physics Scholarship
+Awarded Fulforf-Karp Physics Scholarship
 
   -   Awarded Kent H. Bracewell Research Scholarship
 
