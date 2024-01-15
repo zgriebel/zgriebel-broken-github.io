@@ -25,7 +25,7 @@ At smaller universities athletes might make up 2/3 of enrollment. The athletic d
 
 College Football Coaches follow the prospects they are recruiting. Every recruit has a twitter account set up with some kind of information advertising they are a recruit.
 
-<img src="twitter1.jpg">
+![](twitter1.jpg)
 
 ###### $\color{red}{\text{Class}}$ - This tells coaches the graduation class of a prospect. Nearly ever recruits has this in their bio. This program looks for recruiting class to classify an account as a recruit.
 
@@ -159,7 +159,6 @@ def get_state(location_str):
   #if nothing was found set state as empty string
   return(state)
   #returning what was found for state
-
 ```
 
 This function will look for listed GPA
@@ -183,15 +182,15 @@ def get_gpa(text):
 
 ### Method 1: Coaches Following
 
-<img src="twitter2.jpg">
+<img src="twitter2.jpg"/>
 
 Coaches typically try to hide who they are recruiting. However, on twitter they follow and engage with every player they are recruiting. Essentially there is a public list of their entire recruiting roster, but it would be a huge time waste to manually dig through 4.6k accounts to find maybe 400 names. This program does just that. It may not find every single recruit, but it will get a majority in a time efficient manor.
 
-<img src="twitter3.jpg">
+<img src="twitter3.jpg"/>
 
 The players are distinguished as a recruiting by finding their graduation class. If their graduation class matched what we are looking for the rest of their information is scrapped and listed in a data set with a column \`coach_handle\` to signify the coach that was following(recruiting) them.
 
-```      
+```         
 # this function takes a coaches handle goes through all followers
 #the function filters to grab accounts that mention they graduate in a certain year (this signifies an account is a recruit)
 def get_players(coach_handle):
@@ -274,7 +273,7 @@ def get_players(coach_handle):
 
 The data set is then cleaned some more and imported into this SQL database to be able to sort and analyze for various applications and exports.
 
-<img src="twitter6.jpg">
+<img src="twitter6.jpg"/>
 
 The data base of recruits is scrapped from coaches at colleges in our conference and state. There are additionally some schools/coaches scraped that we often recruit against nationally due to similar recruiting strategies.
 
@@ -314,7 +313,7 @@ from player where player_state = "OH";
 
 ### Method 2: Scraping through other school's posts.
 
-<img src="twitter7.jpg">
+<img src="twitter7.jpg"/>
 
 Lots of smaller schools put up posts like. If a prospect comments to a post like this we can assume two things.
 
@@ -324,7 +323,7 @@ Lots of smaller schools put up posts like. If a prospect comments to a post like
 
 This is especially helpful at the end of the recruiting process when a majority of recruits in a class are committed. There are not a lot of players still available. There are a lot of comments on these posts, but it takes a long time to filter through to find the players in the right class and GPA, so first we need to make a function for recruits we are looking for.
 
-```
+```         
 #this takes a group of text a twitter bio or the text from a tweet reply and checks for
 #1 is this a recruit, 2 do they meet the GPA we are looking for
 def check_hamline(text):
@@ -360,7 +359,7 @@ def check_hamline(text):
 
 Next we need to make a function that gets the information for each recruit to be able to use `check_hamline`
 
-```
+```         
 #this takes a user that replied to a tweet, and the reply itself
 def get_user1(user_data, reply):
   Screen_name = ''
@@ -403,7 +402,7 @@ def get_user1(user_data, reply):
 
 Now we have our scrapping functions we can run code to iterate through each reply.
 
-```
+```         
 #this code is how we first scrape the replies from a tweet
 
 name = #handle of account that posted tweet (string)
@@ -419,7 +418,7 @@ for tweet in tweepy.Cursor(api.search_tweets,q='to:'+name, result_type='recent',
 
 Next we will run through each reply to create our data base of eligible recruits.
 
-```
+```         
 all_data=[]
 none_list=[]
 #replies is a list of replies from the chunk above
@@ -439,7 +438,7 @@ new_data=pd.DataFrame(all_data, columns = ['name','handle','bio','gpa_from_bio',
 #create data fram
 ```
 
-<img src="twitter8.jpg">
+<img src="twitter8.jpg"/>
 
 This Example spreadsheet was a post from a high academic, small private school similar to us. An assumption can be made these recruits are interested in our type of school. The only filters necessary is our organizations GPA minimum and the recruit was in the 2023 recruiting class.
 
