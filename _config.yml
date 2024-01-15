@@ -22,6 +22,8 @@ paginate: 10
 
 # Jekyll
 # ======
+skin: daylight
+
 exclude:
   - scripts/
   - README.md

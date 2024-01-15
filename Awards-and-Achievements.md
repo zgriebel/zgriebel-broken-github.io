@@ -16,9 +16,9 @@ permalink: /Awards-and-Achievements/
 
 </figure>
 
-  -Awarded Fulforf-Karp Physics Scholarship
+  - Awarded Fulforf-Karp Physics Scholarship
 
-  -   Awarded Kent H. Bracewell Research Scholarship
+  - Awarded Kent H. Bracewell Research Scholarship
 
   - Award Rene and Brian McCoy Research Monarch Scholarship
 
@@ -39,7 +39,7 @@ permalink: /Awards-and-Achievements/
 </figcaption>
 
 </figure>
-#### During time as captain:
+##### During time as captain:
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
 -   2nd Most wins in 20 Years
@@ -50,6 +50,6 @@ permalink: /Awards-and-Achievements/
 
 -   Personally recruited over 40% of team's current roster
 
--   Awarded team "Most Committed" award
+-   Voted for team's "Most Committed" award
 
--   Awarded team "Most Courageous" award
+-   Voted for team's "Most Courageous" award
