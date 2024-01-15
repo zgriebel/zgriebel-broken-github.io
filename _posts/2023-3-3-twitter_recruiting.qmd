@@ -25,7 +25,7 @@ At smaller universities athletes might make up 2/3 of enrollment. The athletic d
 
 College Football Coaches follow the prospects they are recruiting. Every recruit has a twitter account set up with some kind of information advertising they are a recruit.
 
-<img src="/twitter1.jpg">
+<img src="/twitter1.jpg"/>
 
 ###### $\color{red}{\text{Class}}$ - This tells coaches the graduation class of a prospect. Nearly ever recruits has this in their bio. This program looks for recruiting class to classify an account as a recruit.
 
