@@ -39,7 +39,8 @@ permalink: /Awards-and-Achievements/
 </figcaption>
 
 </figure>
-##### During time as captain:
+
+#### During time as captain:
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
 -   2nd Most wins in 20 Years
