@@ -4,7 +4,7 @@ title: Awards-and-Achievements
 permalink: /Awards-and-Achievements/
 ---
 
-<figure style="float: left; margin-right: 50px">
+<figure style="float: left; margin-right: 25px">
 
 <img src="/prez_miller.jpg" width="300"/>
 
@@ -28,8 +28,8 @@ Awarded Fulforf-Karp Physics Scholarship
 
   - Elected Hamline Football Captain at 20 years old
 
-#### During time as captain:
 
+#### During time as captain:
 <figure style="float: right">
 
 <img src="/mr_focke.jpg" width="350" style="padding:2px"/>
