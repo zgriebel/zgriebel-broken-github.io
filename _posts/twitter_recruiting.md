@@ -2,7 +2,7 @@
 title: "Using Python and SQL For College Football Recruiting"
 author: "Zach"
 date: "2023-11-30"
-output: html_document
+layout: page
 ---
 
 Built database of rival recruiting rosters and Scraped 400 qualified national recruits for our recruiting board in 2023.
@@ -191,7 +191,7 @@ Coaches typically try to hide who they are recruiting. However, on twitter they 
 
 The players are distinguished as a recruiting by finding their graduation class. If their graduation class matched what we are looking for the rest of their information is scrapped and listed in a data set with a column \`coach_handle\` to signify the coach that was following(recruiting) them.
 
-```         
+```      
 # this function takes a coaches handle goes through all followers
 #the function filters to grab accounts that mention they graduate in a certain year (this signifies an account is a recruit)
 def get_players(coach_handle):
