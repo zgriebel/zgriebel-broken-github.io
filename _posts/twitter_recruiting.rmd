@@ -2,7 +2,7 @@
 title: "Using Python and SQL For College Football Recruiting"
 author: "Zach"
 date: "2023-11-30"
-layout: page
+output: html_document
 ---
 
 Built database of rival recruiting rosters and Scraped 400 qualified national recruits for our recruiting board in 2023.
