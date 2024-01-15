@@ -1,0 +1,10 @@
+---
+title: "Untitled"
+author: "Zach"
+date: "2024-01-15"
+output: html_document
+---
+
+![plz work dude](twitter6.jpg)
+
+<img src="twitter1.jpg" alt="The head and torso of a dinosaur skeleton;           it has a large head with long sharp teeth"/>
