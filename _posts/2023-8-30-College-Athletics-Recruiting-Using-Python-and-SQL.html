@@ -91,7 +91,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="why-is-twitter-the-answer" class="level3">
 <h3 class="anchored" data-anchor-id="why-is-twitter-the-answer">Why Is Twitter The Answer?</h3>
 <p>College Football Coaches follow the prospects they are recruiting. Every recruit has a twitter account set up with some kind of information advertising they are a recruit.</p>
-<p><img src="twitter1.jpg" class="img-fluid"></p>
+<p><img src="twitter1.jpg"></p>
 <section id="colorredtextclass---this-tells-coaches-the-graduation-class-of-a-prospect.-nearly-ever-recruits-has-this-in-their-bio.-this-program-looks-for-recruiting-class-to-classify-an-account-as-a-recruit." class="level6">
 <h6 class="anchored" data-anchor-id="colorredtextclass---this-tells-coaches-the-graduation-class-of-a-prospect.-nearly-ever-recruits-has-this-in-their-bio.-this-program-looks-for-recruiting-class-to-classify-an-account-as-a-recruit."><span class="math inline">\(\color{red}{\text{Class}}\)</span> - This tells coaches the graduation class of a prospect. Nearly ever recruits has this in their bio. This program looks for recruiting class to classify an account as a recruit.</h6>
 </section>
@@ -243,9 +243,9 @@ def get_gpa(text):
 </section>
 <section id="method-1-coaches-following" class="level3">
 <h3 class="anchored" data-anchor-id="method-1-coaches-following">Method 1: Coaches Following</h3>
-<p><img src="twitter2.jpg" class="img-fluid"></p>
+<p><img src="twitter2.jpg"></p>
 <p>Coaches typically try to hide who they are recruiting. However, on twitter they follow and engage with every player they are recruiting. Essentially there is a public list of their entire recruiting roster, but it would be a huge time waste to manually dig through 4.6k accounts to find maybe 400 names. This program does just that. It may not find every single recruit, but it will get a majority in a time efficient manor.</p>
-<p><img src="twitter3.jpg" class="img-fluid"></p>
+<p><img src="twitter3.jpg"></p>
 <p>The players are distinguished as a recruiting by finding their graduation class. If their graduation class matched what we are looking for the rest of their information is scrapped and listed in a data set with a column `coach_handle` to signify the coach that was following(recruiting) them.</p>
 <pre><code># this function takes a coaches handle goes through all followers
 #the function filters to grab accounts that mention they graduate in a certain year (this signifies an account is a recruit)
@@ -326,7 +326,7 @@ def get_players(coach_handle):
   return(new_data)
   #this returns a data set of players with their info and the coach that is following(recruiting) them</code></pre>
 <p>The data set is then cleaned some more and imported into this SQL database to be able to sort and analyze for various applications and exports.</p>
-<p><img src="twitter6.jpg" class="img-fluid"></p>
+<p><img src="twitter6.jpg"></p>
 <p>The data base of recruits is scrapped from coaches at colleges in our conference and state. There are additionally some schools/coaches scraped that we often recruit against nationally due to similar recruiting strategies.</p>
 </section>
 <section id="application-examples-from-sql-database" class="level3">
@@ -355,7 +355,7 @@ from player where player_state = "OH";</code></pre>
 </section>
 <section id="method-2-scraping-through-other-schools-posts." class="level3">
 <h3 class="anchored" data-anchor-id="method-2-scraping-through-other-schools-posts.">Method 2: Scraping through other school’s posts.</h3>
-<p><img src="twitter7.jpg" class="img-fluid"></p>
+<p><img src="twitter7.jpg"></p>
 <p>Lots of smaller schools put up posts like. If a prospect comments to a post like this we can assume two things.</p>
 <p><strong>1.</strong> The prospect is uncommitted, that is why he is responding to a post.</p>
 <p><strong>2.</strong> The prospect ranks his talent to the level of football of the post. If the post is Not D1 the prospects understands he is not a D1 player.</p>
@@ -460,7 +460,7 @@ for reply in replies:
 
 new_data=pd.DataFrame(all_data, columns = ['name','handle','bio','gpa_from_bio','twitter_link' , 'location','url_links', 'reply_to_tweet'])
 #create data fram</code></pre>
-<p><img src="twitter8.jpg" class="img-fluid"></p>
+<p><img src="twitter8.jpg"></p>
 <p>This Example spreadsheet was a post from a high academic, small private school similar to us. An assumption can be made these recruits are interested in our type of school. The only filters necessary is our organizations GPA minimum and the recruit was in the 2023 recruiting class.</p>
 <p>The feature scrapped <code>url_link</code> is so our coaches can immediately evaluate the film. <code>location</code>, <code>bio</code> and <code>reply_to_tweet</code> provides quick information as context about film and the recruit. If interested, the coach evaluating can immediately contact them with a direct <code>twitter_link</code> to the account. This allows a coach to evaluate a player and contact him in under 5 minutes.</p>
 </section>
