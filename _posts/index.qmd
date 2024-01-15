@@ -1,0 +1,145 @@
+---
+title: "PS 8 Association Rules"
+author: "Zach"
+date: '2023-11-21'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+1.  
+
+<!-- -->
+
+a)  Actionable would be for example finding that if a patient tests positive for a disease, they often test positive for another disease. This is actionable because if a patient tests positive for the disease it should be put in place to test for the other.
+
+b)Trivial would be finding symptoms that often go together and finding soar throat and a cough often go together. This is as expected and does not add any additional information to the situation.
+
+c)Inexplicable would be finding a relationship that is strange. For example if it was found that a patient coming in for a broken arm aften has COVID. This relationship does not make sense and more research would need to be done to understand it.
+
+At Hamline elementary it would be interesting look at correlations between being profficient in skills. For example is math scores are very low. However it has been observed some students are good at math, however they struggle with reading the test problems and instructions and therefore get rated low in math. Relationships like this could help identity additional reasoning on why a student may be struggline and could direct help in additional areas to attack the root of the problem.
+
+3)  Napkins, beef, curd, butter, pork, coffee, margarine, frankfurter, domestic eggs, brown bread
+
+Min length 3 there are 16 rules Min length 4 there are 0 rules
+
+4)  6
+
+```{r}
+rm(list = ls())
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(arules)
+library(arulesViz)
+```
+
+```{r}
+df <- read.transactions('Market_Basket_Optimisation.csv', sep = ',')
+```
+
+```{r}
+summary(df)
+```
+
+```{r}
+paste('Theoretical Number of Potential Itemsets')
+(3^119)-(2^120)+1
+```
+
+```{r}
+s = summary(df)
+sizes = s@lengths
+```
+
+```{r}
+plot(sizes, main = 'Transaction Sizes', xlab = '# Items in Transaction', ylab = 'Size Frequency')
+```
+
+```{r}
+groceries_frequency = 
+  tibble(
+    Items = names(itemFrequency(df)),
+    Frequency = itemFrequency(df)
+  )
+```
+
+Top 10 frequent `Items`
+
+```{r}
+groceries_frequency %>%
+  arrange(desc(Frequency)) %>%
+  slice(1:10)
+```
+
+Least 10 freqeunt `Items`
+
+```{r}
+groceries_frequency %>%
+  arrange(-desc(Frequency)) %>%
+  slice(1:10)
+```
+
+```{r}
+summary(groceries_frequency$Frequency)
+```
+
+Median Frequency is .0157 and that will be chosen for our our support.
+
+```{r}
+groceryrules = 
+  apriori(df,
+          parameter = list(
+            support = .0157,
+            confidence = .25,
+            minlen = 2
+          ) )
+```
+
+```{r}
+summary(groceryrules)
+```
+
+There were 50 rules generated
+
+```{r}
+summary(groceryrules@lhs)
+```
+
+This summary represents the lhs column. There is always 1 food in the rhs so 1+length of lhs tells us how many items are in each rule. From the distribution we can see that for 2 food rules there are 41 and for 3 food there are 9.
+
+Top 10 rules by confidence
+
+```{r}
+groceryrules %>%
+  sort(by = 'confidence') %>%
+  inspect()%>% head(12)
+```
+
+Top 12 Rules by lift
+
+```{r}
+groceryrules %>%
+  sort(by = 'lift') %>%
+  inspect()%>% head(12)
+```
+
+Most frequent 6 `Items`
+
+```{r}
+groceries_frequency_top6 <- groceries_frequency %>%
+  arrange(desc(Frequency)) %>%
+  slice(1:6)
+groceries_frequency_top6
+```
+
+```{r}
+top6_items <- groceries_frequency_top6$Items
+
+ rules_wo_top6 <- subset(groceryrules, !(groceryrules@lhs %in% top6_items) & !(groceryrules@rhs %in% top6_items))
+rules_wo_top6 %>% 
+  inspect()
+```
+
+The code above takes the top 6 items in a list. Then takes out any grocery rule that mentions one of the top 6 items. This was double checked doing a different method and is correct given the rule parameters. There are not 10 rules to have a top 10.
+
+The ground beef and herb & pepper actually is interesting! They are not in a similar category of food. However it would make most sense people buy seasoning for their ground beef. Then Olive oil and milk are also not in the same category. However they are probably bought together for meals. If you are sitting down and making a dinner you most likely need or would drink milk, and need olive oil to cook the actual meal. This is opposed to snack food. I know myself when I ma going to pick up some snacks (mineral water, chips, soda) I am not thinking about dinner, I am just picking up some things. But when I have a list and am planning dinners is when I would buy milk and things to cook the dinner, as in olive oil.

@@ -1,0 +1,239 @@
+---
+title: "PS 9"
+author: "Zach"
+date: "2023-11-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+#| message: false
+rm(list = ls())
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(tidyverse)
+library(factoextra)
+library(stringr)
+
+
+```
+
+```{r}
+df <- read.csv('college.csv')
+```
+
+Exercise 1: Using the college dataset from chapter 12, perform clustering that looks at the average faculty salary and annual tuition rates for schools located in Indiana. Choose k = 3 and produce a visualization of your clusters.
+
+Exercise 2: Use the techniques described in Chapter 12 to select two possible optimal values for k for the clustering problem you coded in Question 1. Justify your answer.
+
+Exercise 3: Generate cluster diagrams for the two values of k that you selected in Exercise 2. Which one of these do you believe is the best result? Why?
+
+```{r}
+IL_schools <- df %>% filter(state == 'IL') 
+IL_schools_cluster = select(IL_schools, faculty_salary_avg, tuition )
+
+```
+
+```{r}
+set.seed(2)
+k_clust = kmeans(IL_schools_cluster,
+                 centers = 3,
+                 nstart = 10)
+fviz_cluster(
+  k_clust,
+  data = IL_schools_cluster,
+  main = "IL Colleges",
+  repel = TRUE)
+```
+
+```{r}
+fviz_nbclust(IL_schools_cluster, kmeans, method = "wss")
+```
+
+The WSS suggest 3 clusters will be ideal with an elbow at 3.
+
+```{r}
+fviz_nbclust(IL_schools_cluster, kmeans, method = "silhouette")
+
+
+```
+
+Silhoutte suggests 3 clusters will be ideal with a maximum at 3.
+
+```{r}
+fviz_nbclust(IL_schools_cluster, kmeans, method = "gap_stat")
+```
+
+Gap statistic suggest 5 clusters will be ideal with a local maximum.
+
+```{r}
+set.seed(2)
+k_clust = kmeans(IL_schools_cluster,
+                 centers = 5,
+                 nstart = 10)
+fviz_cluster(
+  k_clust,
+  data = IL_schools_cluster,
+  main = "IL Colleges 5 clusters",
+  repel = TRUE)
+```
+
+Typically 2/3 statistics suggesting the same amount of clusters would be enough to feel confident in that decision. However, this is a rare time where the 1/3 suggestion may be best given the context and the specific boundary of the clusters. 5 clusters does produce some clusters with only a few data points and that is the one disadvantage. However, the smallest, cluster 2 appears to successfully group the 3 outliers of the data set. Clusters 1,3,5 are all very dense and in close proximty suggesting the clusters are a good representation. The additional reason 5 clusters is better is the clear differentiation at tuition = 0. Clusters 3 and 5 are very close in proximity, however 5 clusters successfully splits them apart from positive tuition and negative tuition. This is a clear distinction that is advantageous for us to capture.
+
+```{r}
+cereal <- read.csv('Cereals.csv')
+```
+
+Exercise 4: Using the Cereals.csv dataset, read in the data and drop any missing values using drop_na(). Then select all variables except name, mfr, type, weight, shelf, cups, rating to create a subset of several features we will use to cluster the different cereals. Finally, use the 3 methods we've discussed to determine a good number of clusters for the data, making sure to generate and include the visualizations.
+
+Exercise 5: Using the number of clusters you determined in Exercise 4, perform k-means clustering and printout the cluster centers. Then create a new column in the data called cluster which contains the cluster each observation belongs to. Then create graphic which plots the cluster centers as points in the sugars-calories space. (Fill in the appropriate parts of the code below to do this) Exercise 6: Based on the location of the cluster centers in Exercise 5, give each cluster an intuitive name such as "low calorie - average sugar", etc.
+
+```{r}
+cereal_cluster <- select(cereal, -c(name, mfr, type, weight, shelf, cups, rating))
+cereal_cluster<- drop_na(cereal_cluster)
+```
+
+```{r}
+head(cereal_cluster)
+```
+
+```{r}
+fviz_nbclust(cereal_cluster, kmeans, method = "wss")
+```
+
+Suggests 3 or 4 will be a good cluster with an elbow.
+
+```{r}
+fviz_nbclust(cereal_cluster, kmeans, method = "silhouette")
+```
+
+This suggests 3 will be the best amount of clusters with a maximum.
+
+```{r}
+fviz_nbclust(cereal_cluster, kmeans, method = "gap_stat")
+```
+
+Gap Statistic suggests 3 or 7 will be the best amount of clusters with local maximum.
+
+3 clusters was suggested as a good choice from all measures.
+
+```{r}
+k_clust_cereal = kmeans(cereal_cluster,
+                 centers = 3,
+                 nstart = 10)
+k_clust_cereal
+```
+
+```{r}
+cereal_cluster = cereal_cluster %>%
+mutate(cluster = k_clust_cereal$cluster)
+head(cereal_cluster)
+```
+
+Note that cluster centers are in numeric order by row
+
+```{r}
+k_clust_cereal$centers
+```
+
+```{r}
+#convert cereal_centers (type double) to a df
+centers_df <- data.table::as.data.table(k_clust_cereal$centers, .keep.rownames = "word")
+centers_df
+```
+
+Previously row number = the cluster
+
+```{r}
+#setting cluster to row number to cluster gave us reverse order for some reason. The arithmetic in the below line fixes that 
+centers_df<- mutate(centers_df, cluster = (4 +desc(row_number(centers_df))))
+centers_df
+```
+
+```{r}
+ggplot(data = centers_df,
+aes(x = scale(sugars), y = scale(calories), color = factor(cluster), size=2.5)) +
+geom_point()
+```
+
+Cluster 1: High Calories - High Sugar Cluster 2: High Calories - Average Sugar Cluster 3: Low Calories - Low Sugar
+
+```{r}
+bathsoap <- read.csv('BathSoapHousehold.csv')
+```
+
+Exercise 8: For your chosen number of clusters, visualize the clusters (include the fviz_cluster plot) and instead of the option repel = TRUE use the option geom = c("point") which will plot only points to make things less cluttered. Then for each of your clusters, write down a short and business-intuitive description of the group represented by each cluster.
+
+Exercise 9: Create a table of the average Value and Total Volume for each cluster (use the provided code below) and then determine which cluster has the highest average Value to the business and which cluster represents the largest purchasing Total Volume. Are they the same cluster? If not, then using your business understanding of the types of customers in these clusters, offer an explanation as to why they are not the same
+
+```{r}
+head(bathsoap) 
+```
+
+```{r}
+bath_df <- select(bathsoap, c(CHILD,Affluence.Index))
+bath_df[, c('CHILD', 'Affluence.Index')] = scale(bath_df[,c('CHILD', 'Affluence.Index')])
+```
+
+```{r}
+fviz_nbclust(cereal_cluster, kmeans, method = "wss")
+```
+
+The elbow suggests 3 will be the best option.
+
+```{r}
+fviz_nbclust(cereal_cluster, kmeans, method = "silhouette")
+```
+
+Maximum suggests 3 will be best option.
+
+```{r}
+fviz_nbclust(cereal_cluster, kmeans, method = "gap_stat")
+```
+
+Local maximums at 3 and 7 could be best options.
+
+```{r}
+set.seed(2)
+k_clust_bath = kmeans(bath_df,
+                 centers = 3,
+                 nstart = 10)
+fviz_cluster(
+  k_clust_bath,
+  data = bath_df,
+  main = "BathSoapHousehold 3 Clusters",
+  repel = TRUE, geom = c('point'))
+```
+
+3 was suggested by all three evaluation models. These are large Clusters, however are distinctly separate.
+
+The business description of these clusters. 1: Relatively Average Affluence with less than average children. 2: Low Afluence with higher than average children 3: Relatively Average amount of children with above average Affluence.
+
+```{r}
+set.seed(2)
+k_clust_bath_7 = kmeans(bath_df,
+                 centers = 7,
+                 nstart = 25)
+fviz_cluster(
+  k_clust_bath_7,
+  data = bath_df,
+  main = "BathSoapHousehold 7 Clusters",
+  repel = TRUE, geom = c('point'))
+```
+
+7 clusters was recomended by just one model. This is extremely stratified and is completely broken up from above average children and below average while just stratifying the Affluence. This is probably to many clusters of smilar breakdown to understand and apply. For this reason we will decide 3 clusters will be best.
+
+Create a table of the average Value and Total Volume for each cluster (use the provided code below) and then determine which cluster has the highest average Value to the business and which cluster represents the largest purchasing Total Volume. Are they the same cluster? If not, then using your business understanding of the types of customers in these clusters, offer an explanation as to why they are not the same
+
+The code provided for would not run. Size indicates how many points are in each cluster. This leads us to the same conclusions.
+
+```{r}
+bathsoap %>%
+mutate(cluster = k_clust_bath$cluster) %>%
+group_by(cluster) %>%
+summarise_at(vars(Value, Total.Volume),
+             funs(mean))
+
+```
+
+The most valuable cluster is cluster 3: Relatively Average amount of children with above average Affluence. This makes sense because it is the most affluent group. However it is not the highest in Total Volume. The highest Total Volume is Cluster 1: Relatively Average Affluence with less than average children. We were not provided any context on this data set so I cannot be positive on the meaning of this. My best inference would be Cluster 1 purchases more units and therefor have a higher `Total Volume`. Cluster 3 has a higher `Value` meaning there is more money spent per transaction or per product(not sure on the context). This inference can be supported by the fact that the Cluster with higher `Value` is relatively more Affluent, meaning more money to spend.
