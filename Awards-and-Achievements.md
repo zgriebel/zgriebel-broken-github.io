@@ -16,7 +16,7 @@ permalink: /Awards-and-Achievements/
 
 </figure>
 
-Awarded Fulforf-Karp Physics Scholarship
+  -Awarded Fulforf-Karp Physics Scholarship
 
   -   Awarded Kent H. Bracewell Research Scholarship
 
@@ -28,8 +28,6 @@ Awarded Fulforf-Karp Physics Scholarship
 
   - Elected Hamline Football Captain at 20 years old
 
-
-#### During time as captain:
 <figure style="float: right">
 
 <img src="/mr_focke.jpg" width="350" style="padding:2px"/>
@@ -41,7 +39,7 @@ Awarded Fulforf-Karp Physics Scholarship
 </figcaption>
 
 </figure>
-
+#### During time as captain:
 -   Team won the "Piper Cup" - Athletic Department award for community service and support
 
 -   2nd Most wins in 20 Years
