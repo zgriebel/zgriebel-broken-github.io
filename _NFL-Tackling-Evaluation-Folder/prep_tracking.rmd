@@ -2,7 +2,9 @@
 title: "Prep Tracking"
 author: "Zach"
 date: "2023-12-07"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 This document takes in raw tracking data and produced a dataframe of each tackle_opp tracking data for all players.
