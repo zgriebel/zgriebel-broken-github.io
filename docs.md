@@ -1,7 +1,7 @@
 ---
-layout: page
-title: Docs
-permalink: /docs/
+layout: posts
+title: NFL-Tackling-Evaluation-Folder
+permalink: /NFL-Tackling-Evaluation-Folder/
 ---
 
 A documentation page.
