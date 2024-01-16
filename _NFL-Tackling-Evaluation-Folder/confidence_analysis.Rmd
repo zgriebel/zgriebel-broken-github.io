@@ -1,0 +1,465 @@
+---
+title: "confidence_analysis"
+author: "Zach"
+date: "2024-01-05"
+output: html_document
+---
+---
+title: "confidence_analysis"
+author: "Zach"
+date: "2024-01-05"
+output: html_document
+---
+
+```{r}
+rm(list = ls())
+# These lines load packages
+library(caret)
+library(randomForest)
+library(gbm)
+library(DALEX)
+library(pROC)
+library(AppliedPredictiveModeling)
+library(tidyverse)
+library(performanceEstimation)
+library(glmnet)
+library(auditor)
+```
+
+```{r}
+test <- read.csv('final_test.csv')
+
+```
+
+```{r}
+rf_model<- readRDS('rf_model_total_Jan6_less.rds')
+rf_explain = DALEX::explain(model = rf_model,
+                            data = test,
+                            y = as.numeric(test$tackle=="1"),
+                            type = "classification",
+                            label = "Random Forest")
+```
+```{r}
+df_to_model <- read.csv('df_to_model_total.csv')
+df_to_model<- df_to_model %>% select(-s_diff_ct,-x_diff_ct,-y_diff_ct,-o, -dir_diff_ct) %>% drop_na()
+```
+
+
+```{r}
+predict(rf_model, df_to_model)
+```
+
+
+
+
+Add the actual prediction from the 
+```{r}
+confidence_df$prediction<- 0
+confidence_df<- confidence_df %>% mutate(prediction = case_when( tackle_prob> .56 ~ 1, tackle_prob<.56 ~ 0))
+```
+
+```{r}
+confidence_df %>% select(prediction) %>% table()
+```
+
+
+```{r}
+frame_tackle_opp_total <- read.csv('frame_of_tackle_opp_total.csv')
+```
+
+```{r}
+confidence_df<- frame_tackle_opp_total %>% filter(had_tackle_opp == 1, tackle_oppId %in% confidence_df$tackle_oppId) %>% select(displayName, tackle_oppId) %>% merge(confidence_df)
+```
+
+```{r}
+players <- read.csv('players.csv')
+```
+
+
+
+
+```{r}
+confidence_df <- players %>% filter(displayName %in% unique(confidence_df$displayName)) %>% select(displayName, position) %>% merge(confidence_df) %>% drop_na()
+```
+
+
+
+```{r}
+confidence_summary_df <- confidence_df %>% group_by(displayName) %>% summarise(avg_tackle_prob = mean(tackle_prob), n = n(), tackles = sum(tackle), missed_tackles = n() - sum(tackles), position = position[1]) 
+```
+
+```{r}
+confidence_summary_df$tackle_perc <- (confidence_summary_df$tackles/ confidence_summary_df$n)
+```
+
+
+
+Tackle Probability vs actual tackle percentage. This would be a lot better with a larger sample of games. But the linear trend is very convincing that avg tackle probabilty is a good representation of successful tackles
+```{r}
+confidence_summary_df %>% filter(n>3) %>% ggplot()+ geom_point(aes(x = avg_tackle_prob, y = tackle_perc))+ labs(title = "Player Tackle Probabilty vs Successful Tackle Percent")
+```
+
+```{r}
+confidence_summary_s<- confidence_summary_df %>% filter(position %in% c('FS','SS'), n>3)
+```
+
+ 
+ 
+```{r}
+confidence_summary_s %>% ggplot() + geom_point(aes(x = avg_tackle_prob, y = tackle_perc))
+```
+
+Lets look for some outliers. Players that perform above and below expectations. We will calculate this by taking the prediction 
+
+
+
+```{r}
+write.csv(confidence_summary_s,'tackle_prob_summary_s.csv', row.names =  FALSE)
+```
+
+This is taking the successful tackle percent and subtracting it by the tackle probability. A positive value tells us this player is a better tackler than expected. And a negative value tells you this player preforms below expect. This would tell you a player might not put himself in the best position, but somehow gets the player tackled. Below expected would mean this player plays well before contact, but after contact preforms poorly. 
+```{r}
+confidence_summary_s$above_expected <- confidence_summary_s$tackle_perc - confidence_summary_s$avg_tackle_prob
+```
+
+
+```{r}
+confidence_summary_s <- confidence_summary_s[order(confidence_summary_s$above_expected),]
+```
+
+```{r}
+confidence_summary_s %>% filter(n>7) %>% tail(1)
+```
+
+
+Jordan Poyer successfully makes tackles higher than expected. Lets look at why his expected tackle rate is so low. 
+
+```{r}
+confidence_summary_s %>% filter(missed_tackles == max(confidence_summary_s$missed_tackles))
+```
+This is the Safety with the most missed tackles - 19. His `avg_tackle_prob` is also very low lets look at why that is.
+
+This is the player who has been tackle below expectations. With his `avg_tackle_prob` it is expected he would be a more successful tackler than he is. Lets explore why this is. 
+
+Here we will create some breakdowns
+
+```{r}
+data <- read_csv("df_to_model_total.csv", show_col_types = FALSE)
+```
+
+```{r}
+data <- data %>% drop_na()
+```
+
+
+
+```{r}
+rf_model<- readRDS('rf_model_total_Jan6_less.rds')
+test <- read.csv('final_test.csv')
+```
+
+```{r}
+rf_explain = DALEX::explain(model = rf_model,
+                            data = test,
+                            y = as.numeric(test$tackle=="1"),
+                            type = "classification",
+                            label = "Random Forest")
+```
+```{r}
+test
+```
+
+
+```{r}
+rf_perf = DALEX::model_performance(rf_explain, cutoff = 0.31)
+rf_perf
+```
+
+```{r}
+frame_of_tackle_opp_total<- read.csv('frame_of_tackle_opp_total.csv')
+```
+
+```{r}
+break_down <- DALEX::predict_parts_break_down(rf_explain, data[data$tackle_oppId==14791,], B=25)
+```
+```{r}
+break_down
+```
+
+
+```{r}
+data.frame(break_down$break_down.variable_name,break_down$contribution) %>% pull(break_down.break_down.variable_name)
+```
+
+```{r}
+data[data$tackle_oppId==tackle_oppId,] 
+```
+
+
+Sum jordan poyer contributions
+```{r}
+#initialize variables
+s_diff = 0
+y_los_ct =0 
+a_diff_ct = 0
+x_diff= 0
+x_los_ct= 0
+y_diff = 0
+a_diff   = 0  
+dir_diff= 0
+o_diff_ct= 0
+o_diff= 0 
+o_ct= 0 
+count = 0
+
+#get all of the tackle opps with jordan poyer
+poyer_tackles<- frame_of_tackle_opp_total%>% filter(displayName == 'Jordan Poyer', had_tackle_opp ==1)%>% pull(tackle_oppId)
+
+for(tackle_oppId in poyer_tackles){
+  
+  if(tackle_oppId %in% unique(data$tackle_oppId)){
+    count = count +1
+  #for each tackle opp of jordan poyer
+  break_down<- DALEX::predict_parts_break_down(rf_explain, data[data$tackle_oppId==tackle_oppId,], B=25)
+  
+  break_down_df <- data.frame(break_down$variable_name,break_down$contribution)
+  #starting at 0 add the contributions
+  s_diff =  s_diff + break_down_df %>% filter(break_down.variable_name == 's_diff')%>% pull(break_down.contribution)
+  
+  y_los_ct = y_los_ct + break_down_df %>% filter(break_down.variable_name == 'y_los_ct')%>% pull(break_down.contribution)
+  
+  a_diff_ct = a_diff_ct + break_down_df %>% filter(break_down.variable_name == 'a_diff_ct')%>% pull(break_down.contribution)
+  
+  x_diff= x_diff + break_down_df %>% filter(break_down.variable_name == 'x_diff')%>% pull(break_down.contribution)
+  
+  x_los_ct= y_los_ct + break_down_df %>% filter(break_down.variable_name == 'y_los_ct')%>% pull(break_down.contribution)
+  
+  y_diff = y_diff + break_down_df %>% filter(break_down.variable_name == 'y_diff')%>% pull(break_down.contribution)
+  
+  a_diff   = a_diff + break_down_df %>% filter(break_down.variable_name == 'a_diff')%>% pull(break_down.contribution)
+  
+  dir_diff= dir_diff + break_down_df %>% filter(break_down.variable_name == 'dir_diff')%>% pull(break_down.contribution)
+  
+  o_diff_ct= o_diff_ct + break_down_df %>% filter(break_down.variable_name == 'o_diff_ct')%>% pull(break_down.contribution)
+  
+  o_diff= o_diff + break_down_df %>% filter(break_down.variable_name == 'o_diff')%>% pull(break_down.contribution)
+  
+  o_ct= o_ct + break_down_df %>% filter(break_down.variable_name == 'o_ct')%>% pull(break_down.contribution)
+  }}
+
+variables<-  c("s_diff", "y_los_ct" ,"a_diff_ct", "x_diff" ,"x_los_ct", "y_diff", "a_diff", "dir_diff", "o_diff_ct", "o_diff", "o_ct")
+
+contributions <- c(s_diff, y_los_ct ,a_diff_ct, x_diff, x_los_ct, y_diff, a_diff, dir_diff, o_diff_ct, o_diff, o_ct)
+
+#create df 
+poyer_df <- data.frame(variables, contributions)
+poyer_df$contributions <- contributions/count
+```
+
+```{r}
+poyer_df
+```
+
+```{r}
+
+```
+
+
+```{r}
+#initialize variables
+s_diff = 0
+y_los_ct =0 
+a_diff_ct = 0
+x_diff= 0
+x_los_ct= 0
+y_diff = 0
+a_diff   = 0  
+dir_diff= 0
+o_diff_ct= 0
+o_diff= 0 
+o_ct= 0 
+count = 0
+
+
+data <- data %>% drop_na()
+#get all of the tackle opps with  harry
+scott_tackles<- frame_of_tackle_opp_total%>% filter(displayName == 'Nick Scott', had_tackle_opp ==1)%>% pull(tackle_oppId)
+
+for(tackle_oppId in scott_tackles){
+  if(tackle_oppId %in% unique(data$tackle_oppId)){
+    count = count + 1
+  #for each tackle opp of Caden pitre
+ break_down<- DALEX::predict_parts_break_down(rf_explain, data[data$tackle_oppId==tackle_oppId,], B=25)
+  break_down_df <- data.frame(break_down$variable_name,break_down$contribution)
+  #starting at 0 add the contributions
+  s_diff =  s_diff + break_down_df %>% filter(break_down.variable_name == 's_diff')%>% pull(break_down.contribution)
+  
+  y_los_ct = y_los_ct + break_down_df %>% filter(break_down.variable_name == 'y_los_ct')%>% pull(break_down.contribution)
+  
+  a_diff_ct = a_diff_ct + break_down_df %>% filter(break_down.variable_name == 'a_diff_ct')%>% pull(break_down.contribution)
+  
+  x_diff= x_diff + break_down_df %>% filter(break_down.variable_name == 'x_diff')%>% pull(break_down.contribution)
+  
+  x_los_ct= y_los_ct + break_down_df %>% filter(break_down.variable_name == 'y_los_ct')%>% pull(break_down.contribution)
+  
+  y_diff = y_diff + break_down_df %>% filter(break_down.variable_name == 'y_diff')%>% pull(break_down.contribution)
+  
+  a_diff   = a_diff + break_down_df %>% filter(break_down.variable_name == 'a_diff')%>% pull(break_down.contribution)
+  
+  dir_diff= dir_diff + break_down_df %>% filter(break_down.variable_name == 'dir_diff')%>% pull(break_down.contribution)
+  
+  o_diff_ct= o_diff_ct + break_down_df %>% filter(break_down.variable_name == 'o_diff_ct')%>% pull(break_down.contribution)
+  
+  o_diff= o_diff + break_down_df %>% filter(break_down.variable_name == 'o_diff')%>% pull(break_down.contribution)
+  
+  o_ct= o_ct + break_down_df %>% filter(break_down.variable_name == 'o_ct')%>% pull(break_down.contribution)
+  }}
+
+variables<-  c("s_diff", "y_los_ct" ,"a_diff_ct", "x_diff" ,"x_los_ct", "y_diff", "a_diff", "dir_diff", "o_diff_ct", "o_diff", "o_ct")
+
+contributions <- c(s_diff, y_los_ct ,a_diff_ct, x_diff, x_los_ct, y_diff, a_diff, dir_diff, o_diff_ct, o_diff, o_ct)
+ 
+scott_df <- data.frame(variables, contributions)
+scott_df$contributions <- contributions/count
+scott_df$positive <- "0"
+scott_df[scott_df$contributions>0,]$positive<- "1"
+write.csv(scott_df, 'scott_df.csv' ,row.names = FALSE)
+```
+
+```
+
+```{r}
+smith_df$positive <- "0"
+smith_df[smith_df$contributions>0,]$positive<- "1"
+write.csv(smith_df, 'smith_df.csv' ,row.names = FALSE)
+```
+
+
+```{r}
+write.csv(petire_df, 'petire_df.csv' ,row.names = FALSE)
+```
+
+
+```{r}
+poyer_df
+```
+```{r}
+poyer_df$positive <- "0"
+poyer_df[poyer_df$contributions>0,]$positive<- "1"
+```
+
+```{r}
+write.csv(poyer_df, 'poyer_df.csv' ,row.names = FALSE)
+```
+
+Create a Variable for postive and negative so we can add colors
+```{r}
+poyer_df$positive <- "0"
+poyer_df[poyer_df$contributions>0,]$positive<- "1"
+```
+
+
+
+
+```{r}
+library(ggthemes)
+
+tackle_prob <- .633 + poyer_df %>% select(contributions) %>% sum()
+poyer_df%>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ theme_calc()+ ggtitle(paste("Jordan Poyer Tackle Report Summary \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+```
+
+
+This graph shows the contributions from the reasons Jordan Poyers Probabilty is so low. There is clearly one main factor that keeps his tackle probabilty and that is 'y_los'. That feature is where the tackle occurs laterally in the field. Tackles closer to the sidelines have signficantly higher chances of being made. This is because near the sideline the ball carrier has only one was to go- away from the sideline. Towards the center of the field the tackles are significantly harder because the ball carrier has both directions left and right to go. 'y_los' is not typically in the defenders control. This shows the tackles that Jordan Poyer is asked to make withing his teams defense are difficult tackles making his high tackle rate 83% even more impressive. Also 'x_los' is Jordan Poyers 3rd most negative tackle feature. This feature is how far down field the tackle is occuring and also out of the defenders control. Two of Jordan Poyers most negative features are added difficulty with the location of tackles his defense asks him to make. Lets take out these two features. 
+
+
+
+```{r}
+tackle_prob <- .633 + poyer_df %>% filter(!(variables %in% c('x_los', 'y_los'))) %>% select(contributions) %>% sum()
+  
+p1 <- poyer_df %>% filter(!(variables %in% c('x_los', 'y_los'))) %>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ theme_calc()+ ggtitle(paste("Jordan Poyer Tackle Report Summary Adjusted For Difficulty \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+
+p2<- confidence_summary_s %>% ggplot() + geom_boxplot((aes(x = avg_tackle_prob)))+ geom_point(aes(x=.626, y = 0), color = 'red') + geom_point(aes(x=.56, y = 0), color = 'blue') + annotate("text", x = .626, y = .05, label = "Adjusted For difficulty")+ annotate("text", x = .56, y = -.05, label = "Projected")+ labs(title = "Jordan Poyer Tackle Probabilty Adjusted for difficulty")
+  
+
+```
+
+```{r, fig.width= 15, fig.height= 5}
+library(patchwork)
+p1+p2
+```
+This tells us that Jordan Poyer is asked to make a lot of difficult tackles. His most positive feature is 'x_dis'. This tell
+
+
+Here we will look at `x_s_diff` 
+
+
+```{r}
+  ggplot() + geom_boxplot(data = data, aes(x = x_s_diff, y = tackle_oppId %in% poyer_tackles ))+ xlim(-7,7) 
+```
+
+
+
+```{r}
+ggplot() + geom_boxplot(data = data, aes(x = x_adiff, y = tackle_oppId %in% poyer_tackles ))+ xlim(-3,3)
+```
+
+
+
+```{r}
+ggplot() + geom_boxplot(data = data, aes(x = x_diff, y = tackle_oppId %in% poyer_tackles ))
+```
+
+
+
+We will divide the contributions by 53 which is how many tackle oppurtunities  Jalen Pitre Had
+```{r}
+pitre_df$contributions <- pitre_df$contributions/53
+```
+
+```{r}
+write.csv(petire_df, 'petire_df.csv' ,row.names = FALSE)
+```
+
+Create a Variable for postive and negative so we can add colors
+
+
+
+```{r}
+petire_df$positive <- "0"
+petire_df[petire_df$contributions> 0,]$positive<- "1"
+```
+
+
+```{r}
+
+tackle_prob <- .633 + pitre_df %>% select(contributions) %>% sum()
+pitre_df%>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ theme_calc()+ ggtitle(paste("Jalen Pitre Tackle Report Summary \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+```
+Once again `y_los` is the main negative feature. This shows Jalen Pitre is being asked to make tackles that are difficult because they are in the middle of the field. That is often the case with Safeties. They play in the middle of the field and often do not have the luxury of using the sideline to tackle. However he is not asked to make difficult tackles close to the line of scrimagge which makes the tackles easier. We will take both of the field metrics out and analyze the features in his control. 
+
+
+```{r}
+tackle_prob <- .633 + pitre_df %>% filter(!(variables %in% c('x_los', 'y_los'))) %>% select(contributions) %>% sum()
+  
+p3 <- pitre_df %>% filter(!(variables %in% c('x_los', 'y_los'))) %>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ theme_calc()+ ggtitle(paste("Jalen Pitre Tackle Report Summary Adjusted For Difficulty \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+
+p4<- confidence_summary_s %>% ggplot() + geom_boxplot((aes(x = avg_tackle_prob)))+ geom_point(aes(x=.58, y = 0), color = 'red') + geom_point(aes(x=tackle_prob, y = 0), color = 'blue') + annotate("text", x = tackle_prob, y = .05, label = "Adjusted For difficulty")+ annotate("text", x = .58, y = -.05, label = "Projected")+ labs(title = "Jalen Pitre Tackle Probabilty Adjusted for difficulty")
+  
+
+```
+
+```{r, fig.width= 15, fig.height = 5}
+p3+p4
+```
+
+```{r}
+ggplot() + geom_boxplot(data = data, aes(x = x_diff, y = tackle_oppId %in% pitre_tackles ))
+```
+```{r}
+ggplot() + geom_boxplot(data = data[], aes(x = x_adiff, y = tackle_oppId %in% pitre_tackles )) %>% 
+```
+

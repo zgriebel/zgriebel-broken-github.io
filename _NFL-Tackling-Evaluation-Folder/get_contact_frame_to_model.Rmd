@@ -1,0 +1,87 @@
+---
+title: "Untitled"
+author: "Zach"
+date: "2024-01-06"
+output: html_document
+---
+
+this doc will add the frame at contact 
+
+```{r}
+rm(list = ls())
+library(devtools)
+library(dplyr)
+library(gganimate)
+library(ggforce)
+library(ggplot2)
+library(readr)
+```
+
+The purpose of this notebook is to find the frame 1 after our frame before contact, yes this is back tracking but at this point it is the easiest way to find these frames. 
+```{r}
+frame_of_tackle_opp <- read.csv('frame_of_tackle_opp_total.csv')
+```
+
+Change the Id to all numbers so we can 
+
+```{r}
+frame_of_tackle_opp$game_play_frameId <- gsub('-', '', as.character(frame_of_tackle_opp$game_play_frameId))
+```
+
+```{r}
+tracking_total<- read.csv('tracking_total.csv')
+```
+
+
+```{r}
+library(stringr)
+head(tracking_total)
+```
+
+create game play id
+```{r}
+tracking_total$game_playId = 0
+tracking_total$game_playId <- str_c( as.character(tracking_total$gameId), as.character(tracking_total$playId), sep = '')
+head(tracking_total)
+```
+
+now create game play frame id 
+
+```{r}
+tracking_total$game_play_frameId <- str_c( as.character(tracking_total$game_playId), as.character(tracking_total$frameId), sep = '')
+```
+
+```{r}
+frame_of_tackle_opp$next_frame <- as.character(as.numeric(frame_of_tackle_opp$game_play_frameId)+1)
+```
+
+```{r}
+contact_frame<- tracking_total %>% filter(game_play_frameId %in% unique(frame_of_tackle_opp$next_frame))
+```
+
+```{r}
+write.csv(contact_frame, 'contact_frame.csv', row.names = FALSE)
+```
+
+```{r}
+contact_frame$next_frame <- contact_frame$game_play_frameId
+```
+
+
+```{r}
+contact_frame_opp <- frame_of_tackle_opp %>% select(displayName, tackle, had_tackle_opp, on_defense, has_ball, tackle_oppId, next_frame) %>% merge(contact_frame, keep = TRUE)
+```
+
+```{r}
+length(unique(contact_frame_opp$tackle_oppId))
+```
+```{r}
+colnames(contact_frame_opp)
+```
+
+
+
+```{r}
+write.csv(contact_frame_opp, 'contact_frame_tackle_opp.csv', row.names = FALSE)
+```
+

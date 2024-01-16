@@ -1,0 +1,396 @@
+---
+title: "Tackle Probabilty"
+author: "Charlie Wilson, Zach Griebel, Rahim Avery"
+date: "2023-12-10"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+This document takes the dataframe to model and does the modeling. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm(list = ls())
+# These lines load packages
+library(caret)
+library(randomForest)
+library(gbm)
+library(DALEX)
+library(pROC)
+library(AppliedPredictiveModeling)
+library(tidyverse)
+library(performanceEstimation)
+library(glmnet)
+library(auditor)
+```
+
+# Problem
+
+This project is for the NFL 2024 big data bowl. This year's theme is tackling. Not a specific objective, simply take the plays and tracking data to provide beneficial analytics to any part of the football community. Our group wanted to predict if a defender makes or misses a tackle. There is an analytic for catch probability often used on NFL broadcasts- Catch Probability and we wanted to do the same with tackling.
+
+![](catch_probablity.jpg)
+
+The implementation we were originally most excited about would be in a situation similar to pictured above. A play where there is a high probability of a tackle occurring and then the ball carrier miraculously finds a way to break the tackle and the announcer can place a number on just how spectacular the play is. Additionally, being able to analytically represent reasons a player makes or misses a tackles could be beneficial for in-game coaching or overall analysis.
+
+### Proccess
+
+There are countless coaching points before a defender makes contact with a ball carrier that go into a made or missed tackle. This project used the available tracking data to create those coaching points as features to train a model. The goal of this model is to correctly predict made tackles to find a confidence level that a tackle is made. Correctly predicting positive values is the measure of precision. Therefore, models will be evaluated by the best precision.
+
+### Set Up
+
+Before loading in this data there was lots of cleaning and some important decisions made. This data set was created from tracking data. The tracking data was filtered to be one frame before a defender makes contact will the ball carrier. As mentioned bfore Pre-Contact coaching points are often what cause a defender to make or miss a tackle. There are many other coaching points before and after contact that likely correlate with tackle results, however with the tracking data of simply the players positioning and speed we are unable to statistically represent some features.
+
+```{r}
+data <- read_csv("df_to_model_total.csv", show_col_types = FALSE)
+```
+
+```{r}
+data <- data %>% drop_na()
+```
+
+
+```{r}
+length(unique(data$tackle_oppId))
+```
+
+We have experimented with which variables to keep. We related most statistics between the ball carrier and tackler.
+
+```{r}
+glimpse(data)
+```
+
+
+
+```{r}
+data %>%
+  keep(is.numeric) %>%
+  cor() %>%
+  corrplot::corrplot(tl.cex = 0.6)
+```
+
+The variables with x represent the length of the field. The Y value is the width of the field. The features marked `bc` represents statistics of the ball carrier. The features marked `diff` represents the difference between the ball carrier and tackler. `s`-speed, `a`- acceleration, `o`-`orientation` ,where the player if facing. `dist_from_los` represents where the ball carrier is in reference to where the play started. With prior analysis it was found using features that represent the relationship between the tackler and ball carrier are most beneficial and for that reason most individual features are removed below.
+
+
+
+Separate our data for training.
+
+```{r}
+set.seed(1122)
+samp = caret::createDataPartition(data$tackle, p = 0.7, list = FALSE)
+train = data[samp, ]
+test = data[-samp, ]
+rm(samp)
+```
+
+```{r}
+train %>%
+  select(tackle) %>% 
+  table()
+```
+
+In training data we have 131 missed tackles and 679 made tackles. We will have to do some work to make up for the imbalance.
+
+These variables are 1 or 0. `tackle` is if the tackle is made or not. `made_first_contact` represents if this is the first defender to make contact with the ball carrier.
+
+```{r}
+train$tackle = as.factor(train$tackle)
+
+```
+
+```{r}
+glimpse(train)
+```
+
+As stated above to begin modeling we need to balance the training data. We will do this with smote.
+
+```{r}
+set.seed(69)
+train.bal = smote(tackle ~ .,
+                  data = train,
+                  perc.over = 3,
+                  perc.under = 1.5)
+
+# After using SMOTE to balance training
+# data, lets inspect the new counts.
+train.bal %>%
+  select(tackle) %>%
+  table() 
+```
+
+Now the training data is more even.
+
+GMB Model
+
+```{r}
+ #set.seed(169)
+ #gbm_model = train(
+  # y = train.bal$tackle,
+   #x = select(train.bal,-tackle,-tackle_oppId),
+   #method = "gbm",
+   #verbose = FALSE,
+   #trControl = trainControl(method = "boot", number = 5),
+   #tuneLength = 10)
+#saveRDS(gbm_model, "nfl_gbm_model_total.rds")
+gbm_model <- readRDS('nfl_gbm_model_total.rds')
+```
+
+```{r}
+plot(gbm_model)
+```
+
+```{r}
+gbm_explain = DALEX::explain(model = gbm_model,
+                             data = test,
+                             y = test$tackle==1,
+                             type = "classification",
+                             label = "GradientBoost")
+```
+
+Random Forrest Model
+
+```{r}
+ #set.seed(986)
+ #rf_model = train(
+  # y = train.bal$tackle,
+   #x = select(train.bal, -tackle,-tackle_oppId),
+   #method = "rf",
+   #trControl = trainControl(method = "boot", number = 30),
+   #tuneLength = 10)
+ #saveRDS(rf_model, "rf_model_total.rds")
+  rf_model<- readRDS('rf_model_total.rds')
+```
+
+```{r}
+plot(rf_model)
+```
+
+```{r}
+rf_explain = DALEX::explain(model = rf_model,
+                            data = test,
+                            y = as.numeric(test$tackle=="1"),
+                            type = "classification",
+                            label = "Random Forest")
+```
+
+```{r}
+rf_explain_flipped = DALEX::explain(model = rf_model,
+                            data = test,
+                            y = as.numeric(test$tackle=="0"),
+                            type = "classification",
+                            label = "Random Forest")
+```
+
+
+### Model Evaluation
+
+Remember, the goal of the model is to correctly predict made tackles. The best model will be evaluated by precision. If we have a different goal, we would potentially set up the variables and modeling differently.
+
+GMB model
+
+```{r}
+gbm_perf = DALEX::model_performance(gbm_explain, cutoff = 0.4)
+gbm_perf
+```
+
+```{r}
+s<- score_specificity(gbm_explain, cutoff = .5)
+s[[2]]
+```
+
+
+.905 precision
+
+##Random Forest Model
+
+```{r}
+rf_perf = DALEX::model_performance(rf_explain, cutoff = 0.3)
+rf_perf
+```
+
+
+
+
+```{r}
+rf_mp = DALEX::model_parts(rf_explain,
+                           B = 50)
+
+gbm_mp = DALEX::model_parts(gbm_explain,
+                            B = 50)
+plot(rf_mp, gbm_mp, max_vars = 8)
+```
+
+Lift Chart
+
+
+
+
+```{r}
+lift_curve <- plot(rf_perf, gbm_perf, geom = "lift")
+```
+
+```{r}
+plot(lift_curve)
+```
+
+```         
+```
+
+Our lift also looks better with our GBM model.
+
+```{r}
+library(patchwork)
+p1 = plot(gbm_perf, rf_perf, geom = "roc")
+p2 = plot(gbm_perf, rf_perf,  geom = "prc")
+p1 + p2
+```
+
+GBM and RF preform pretty similar for both. GBM has a slight edge on for ROC.
+
+The GBM model has the best precision, which was originally our main focus for the model as well as preforms best on lift and ROC. GBM will be the model used moving forward.
+
+# Application
+
+Here is a play from Lions RB D'Andre Swift. On the second play of the season D'Andre breaks 2 tackles, turning a 3 yard gain into a 53 yard highlight.
+
+<https://drive.google.com/file/d/1-jU9L8CIVUxKWVVSOxVaE5iqfIbLeISa/view?usp=sharing>
+
+Let's use our model to evaluate the tackle opportunities on this play.
+
+#### Tackle Oppurtunity 1- #24 misses tackle
+
+```{r}
+df <- read.csv('frame_off_tackl
+```
+
+
+
+```{r}
+ df %>% filter(tackle_oppId == 917, tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+```
+
+```{r}
+gbm_shap_24 = DALEX::predict_parts_shap(gbm_explain, data[data$tackle_oppId==917,], B=25)
+```
+
+```{r}
+prob_24 = predict(gbm_model, newdata = data[data$tackle_oppId==917,], type="prob")[,2]
+```
+
+![](24_tackleopp.jpg)
+
+After watching the film over a few times a coach would have these coaching points for why #24 missed this tackle.
+
+1.  Don't stop your feet! - Keep moving at the runner!
+
+    -   Analytically- `x_s_diff`, `y_s_diff` ,`x_adiff` ,`y_adiff` are too large
+
+2.  It is difficult when he is running so straight. Take him straight on! (This is a difficult ask to tackle a runner so straight or "downhill")
+
+    -   Analytically- #24's `o` is running very straight (near 360) which adds to the difficult
+
+```{r}
+plot(gbm_shap_24) + 
+  ggtitle(paste("SHAP for #24: Prob =", round(prob_24,3)))
+```
+
+The model correclty predicts this would be a missed tackle.
+
+Coaching point 1 is captured very well by the model, with `x_s_diff`, `y_s_diff` ,`x_adiff` ,`y_adiff` all being reasons to predict the tackle as missed.
+
+Coaching point 2 is captured well with `o_bc` being close to 360 being a significant issue.
+
+#### Tackle Oppurtunity 2- #43 misses tackle
+
+```{r}
+df %>% filter(tackle_oppId == 918
+              , tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+
+```
+
+```{r}
+gbm_shap_43 = DALEX::predict_parts_shap(gbm_explain, data[data$tackle_oppId==918,], B=25)
+```
+
+![](43tackleopp.jpg)
+
+On this tackle opportunity an announcer would say something like "Man, I thought he was for sure tackled here. Incredible play from Swift to accelerate break this tackle"
+
+The coaching points for #43 would be.
+
+1.  Great angle and lateral pursuit to force this ball toward the sideline
+
+    -   Analtyically- because `y_s_diff` was good this forced `dis_from_los_y` to be high, which makes it a more likely tackle
+
+2.  Tackler was a bit too far away for a tackle attempt, that's why it was a difficult from-behind dive tackle
+
+    -   Analytically- `x_diff` and `y_diff` were too high which forced `o` to be a problem.
+
+```{r}
+prob_43 = predict(gbm_model, newdata = data[data$tackle_oppId==918,], type="prob")[,2]
+```
+
+```{r}
+plot(gbm_shap_43) + 
+  ggtitle(paste("SHAP for #43: Prob =", round(prob_43,3)))
+```
+
+The model incorrectly classified this as a tackle. However, watching the play this was a very impressive broken tackle and would be a great opputunity to use "wow this was a 92% tackle probability!"
+
+The model correctly identified coaching point 1 as excellent pursuit and forcing the Ball Carrier to the sideline as reasons this should be a tackle. While the model also identified the tackler was far from the ball carrier and behind him which lead to the missed tackle
+
+#### Tackle Opportunity 3- #2 makes tackle
+
+```{r}
+df %>% filter(tackle_oppId == 916
+              , tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+```
+
+```{r}
+gbm_shap_2 = DALEX::predict_parts_shap(gbm_explain, data[data$tackle_oppId==916,], B=25)
+```
+
+```{r}
+prob_2 = predict(gbm_model, newdata = data[data$tackle_oppId==916,], type="prob")[,2]
+```
+
+![](tackle_opp2.jpg)
+
+Number 2 for the eagles is one of the best tackles in the game. No suprise he makes this tackle. This is what coaches call "teach tape" as in this is a perfectly done play that they would show to other players and coaches to learn from.
+
+The coaching points for others to learn from.
+
+1.  Great angle to cut him off
+
+    -   Analytically- great `o` relative to `o_bc` which is called `o_diff`
+
+2.  Great job to keep your feet moving, and continue moving at him
+
+    -   Good `y_s_diff` to force a beneficial `y_diff`
+
+3.  Good job using the sideline to your advantage
+
+    -   Being close to the sideline, `dis_from_y` makes the tackle an easier tackle
+
+```{r}
+plot(gbm_shap_2) + 
+  ggtitle(paste("SHAP for #2: Prob =", round(prob_2,3)))
+```
+
+The model correctly identified this as a well executed tackle with a probability of .998. It identified the excellent angle with the `o_diff` and the great lateral pursuit with beneficial `y_s_diff` and `y_diff` while also aknowledging the benefit of being near the sideline `dis_from_los_y`
+
+After learning the coaching points and analytics lets watch this play again.
+
+https://drive.google.com/file/d/1-jU9L8CIVUxKWVVSOxVaE5iqfIbLeISa/view?usp=sharing
+
+Did this add to your understanding and appreciation of the play? I believe this knowledge and analysis significantly adds to the viewing experience. Adding this analysis could enhance broadcasts as well as exposure on social media.
+
+Additionally, reports could be given to players or coaches during the game. NFL players and coaches are not aloud to watch live film during games, that is why often you may see players looking at still pictures on the sidelines. From experience, after a missed tackle a defender wants to know what to do different, and rarely did a coach get a good live look to properly make the correction. This explenation plot would be a great way for #24 to make in game corrections on his tackling to keep running his feet. And for #43 to be assured he did most things very well Swift just made a great play.
+
+Along with individual in-game reports, overall analysis could be done to find a team or player's weak point tendencies. A tackle score could help evaluate tackler's pre-contact abilities very efficiently. Or a ball carrier could be evaluated by their ability to break high percentage tackles.
+
+### Conclusion
+
+With a high precision, this model does well predicting successful tackles, which is the goal. There is still some opportunity for improvement within the model. However, there will always be a limit on how accurate this model could be because in sports players do things that breaks even the most confident predictions, that's why we love it. But this model absolute could add to the view experience in addition to improving the actually quality of play in the NFL.

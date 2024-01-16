@@ -1,0 +1,204 @@
+---
+title: "find_made_contact"
+author: "Zach"
+date: "2024-01-03"
+output: html_document
+---
+
+```{r}
+# * load packages ----
+rm(list = ls())
+library(devtools)
+library(dplyr)
+library(gganimate)
+library(ggforce)
+library(ggplot2)
+library(readr)
+```
+
+```{r}
+#tracking<- read.csv('tracking_total.csv')
+```
+
+```{r}
+#players<- read.csv('players.csv')
+#plays <- read.csv('plays.csv')
+#tackles<- read.csv('tackles.csv')
+#games <- read.csv('games.csv')
+
+```
+
+The dataframe for our model will consist of data from two frames during the play, the frame as the defender makes contact with the ball carrier and the frame just before a defender makes contact with the ball carrier.
+
+First we must find the frame at which a defender makes contact. With a sample of tracking data the distance from ball carrier,dist_from_bc was calculated for all players at each frame. Since there is no event in the tracking data that signfies each time a tackler makes contact with the ball carrier, the best we have is when event = 'first_contact'. This is the point in the play where the ball carrier is first contacted by a defender. It does not tell us everytime a tackler makes contact with a defender, but it tells us how close a defender is to the ball carrier for PFF to classify a defender as "Made Contact". With this concept we find the average distance PFF classifies a defender making contact and will use this to to classify frames
+
+This markdown creates a data set from sample of defenders who made first contact and their dist_from_bc at event = "first_contact"
+
+```{r}
+library('stringr')
+#tracking$game_playId = 0
+#tracking$game_playId <- str_c( as.character(tracking$gameId), as.character(tracking$playId), sep = '.')
+
+#head(tracking)
+```
+
+```{r}
+get_dist_from_bc <- function(game_playId, frame) {
+  #ball data is the football location
+ball_data <- play_data[play_data$displayName == 'football',]
+  #get x and y coordinate#
+ball_x <- ball_data[ball_data$frameId == frame,]$x
+ball_y <- ball_data[ball_data$frameId == frame,]$y
+#data of just the players at the given frame
+player_data <- play_data %>% filter(frameId == frame & displayName !='football')
+player_data$dist_from_bc <- sqrt(((ball_x-player_data$x)^2)+((ball_y-player_data$y)^2))
+#distance formula player to ball
+
+player_data <- player_data %>% select('gameId', 'playId', 'nflId', 'frameId', 'dist_from_bc')
+#select only the necessary variables to simplify join
+player_data
+#set the function equal to a dummy table and then join with tracking for efficient 
+}
+
+
+
+
+```
+
+```{r}
+#frame_table <- data.frame(matrix(ncol = 5, nrow = 0))
+
+#provide column names
+#colnames(frame_table) <- c('game_playId', 'nflId', 'frameId', 'dist_from_bc')
+#play_num = 0
+
+#all individual games from this dataset. It is 16 for week 1
+
+#for (play in unique(tracking$game_playId) ) {
+  #this took some time
+ # play_num = play_num +1
+#  print(play_num)
+ # play_data<- tracking %>% filter(game_playId == play)
+      #play data is for this specifc play
+  #    for (frame in unique(play_data$frameId)){
+        #iterate accross frames
+   #     frame_data<-get_dist_from_bc(game_playId = play, frame = frame)
+        #returns the data from individual frame
+        #add to running table
+    #    frame_table <- rbind(frame_table, frame_data) }}
+
+
+
+#write.csv(frame_table, "dist_from_bc_total.csv", row.names=FALSE)
+#this is a very large data frame
+#saved as distance from ball
+```
+
+```{r}
+#max(row_number(frame_table))
+```
+
+This df has 1,346,246 observations same as our frame_table. This tells us that that every player data point has been calculated properly for dist_from_bc.
+
+```{r}
+
+#tracking_with_distance <- tracking %>% merge(frame_table, all = TRUE)
+#merge with the tracking data, all columns are kept
+```
+
+`tracking` now has feature `` dist_from_bc in `tracking_with_distance) ``
+
+df `tackles` has record of who has a tackle, assist, or missed tackle on every play. Filter out assist and we have every made or missed tackle. We see nearly 17% percent of tackle oppurtunities are missed. Our eventual goal will be to predict when and why these tackles are missed. We will aim to capture the frame before a tackle begins to capture features that predict whether the tackle was made or lost.
+
+```{r}
+#tackles %>% filter(assist == 0) %>% select(tackle) %>% table() %>% prop.table()
+```
+
+Here we create a data frame of each frame that initial contact on the ball carrier is made. In this data set that is marked by `event` == first_contact. We add `defensiveTeam` to our df to be able to filter defense and offense.
+
+```{r}
+#defensive_team_play <- plays %>% select(gameId, playId, defensiveTeam) 
+
+
+#first_contact_frame_all_data <- tracking_with_distance %>% filter(event == 'first_contact') %>% #merge(defensive_team_play)%>% mutate(on_defense = case_when(club == defensiveTeam ~ 1, club != #defensiveTeam ~ 0, is.na(club) ~ NA))
+```
+
+This df all tracking data from every point first contact
+
+```{r}
+#first_contact_frame_all_data %>% filter(event != 'first_contact')
+```
+
+Empty because all data is the frame of first contact frames
+
+```{r}
+#first_contact_players_df <- data.frame(matrix(ncol = 21, nrow = 0))
+#provide column names
+#colnames(first_contact_players_df) <- colnames(first_contact_frame_all_data)
+#counter = 0
+#for (play in unique(first_contact_frame_all_data$game_playId)) {
+  #for each play
+ # d_play_data<- first_contact_frame_all_data %>% filter(game_playId == play, on_defense == 1)
+  #get df of just this play, just defensive players
+  #    counter = counter +1
+   #   print(counter)
+    #  min_dist <- min(d_play_data$dist_from_bc)
+      #the min distance is the distance of player closet to ball
+      
+      #first_contact_player<-d_play_data[d_play_data$dist_from_bc == min_dist,]
+      #player closest to ball during first contact means this player made first contact
+      #first_contact_players_df <- rbind(first_contact_players_df, first_contact_player)
+    #}
+```
+
+first_contact_players_df is a df of the defensive player who made first contact for each play
+
+```{r}
+#first_contact_players_df <- read.csv('~/repos/zgriebel.github.io/projects/NFL Tackling Evaluation/first_contact_players_df.csv')
+#first_contact_players_df %>% ggplot() + geom_boxplot(aes(x = dist_from_bc))
+```
+
+There are some points that are outliers. Lets explore this.
+
+```{r}
+#first_contact_outliers <- first_contact_players_df%>% filter(dist_from_bc>2.5) %>% pull(game_playId)
+```
+
+```{r}
+#first_contact_players_df <- first_contact_players_df %>% filter(!(game_playId %in% first_contact_outliers))
+```
+
+```{r}
+#this is the data set of the defensive players first contact
+#first_contact_players_df %>% ggplot() + geom_boxplot(aes(x = dist_from_bc))
+```
+
+![](graph_dist_from_bc.png)
+
+This looks better.
+
+Now lets add made first contact into our player that made the tackle data set and select the tackle or missed tackle statistics, along with our new `made_first_contact`
+
+```{r}
+#first_contact_players_df$made_first_contact = 1
+#first we need to filter tackles for just week 1
+
+#next lets filter by weeks that we have data for 
+#tackles <- tackles %>% filter(gameId %in% unique(tracking_with_distance$gameId))%>% #merge(first_contact_players_df, all = TRUE) %>% select('gameId', 'playId', 'tackle', 'pff_missedTackle', 'made_first_contact')
+#if made first contact is NA it means this player did not make first contact
+#tackles[is.na(tackles$made_first_contact),]$made_first_contact <- 0
+#tackles<- tackles %>% filter(!(is.na(tackle)))
+#if tackle is set to na that row is from a player who made first contact but did not record a made or missed tackle. We want to remove this
+```
+
+Now to predict whether a tackle is made we will take the `frameId` 1 frame before the defender makes contact with the ball carrier. The ball carrier may be officially "tackled" well after the tackler makes contact. The purpose of this proejct is to analyze features before contact, so to start we need to find when defenders first "make contact" to trace back.
+
+```{r}
+#summary(first_contact_players_df$dist_from_bc)
+```
+
+![](sum_dist_from_bc.png)
+
+The Mean dist_from_bc is .93. This is the average distance PFF classifies a defender as "making contact with ball carrier". The goal of our model is to be easy to interpret for all audiances, so we will round this to 1. It is much easier to conceptualize our data is from when the defenders tracker is 1 yard away from the ball carrier.
+
+When a tackler is 1 yard from the ball carrier we will consider this "Frame of Contact" the frame immediately before will be considered "Frame Before Contact"

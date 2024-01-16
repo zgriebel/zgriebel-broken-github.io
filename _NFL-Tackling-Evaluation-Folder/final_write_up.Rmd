@@ -1,0 +1,279 @@
+---
+title: "FInal_writeup"
+author: "Zach"
+date: "2024-01-07"
+output: html_document
+---
+
+
+
+The group for this project has a unique appreciation and understanding of tackling. All three of us are undergraduate students who play football at our university. Between us we have over 60 collegiate starts, over 200 collegiate tackles and definitely a few too many missed tackle as well. Our head coach always says "The best defenses are the best tacklers" and "good defense is how you win football games". However, it is simply not that easy, we spend valuable time in practice and in film breakdown learning and correcting the techniques of tackling. Coaching tackling techniques is one of the most debated aspects of defensive football and it is coaching that players are constantly seeking. However, on game day, typically coaches are occupied with their game day roles like play calls or substitutions to provide correct, meaningful feedback of a tackle opportunity. Quality tackling is complex, it often takes a coach or player multiple playbacks of watching film after the game to fully evaluate or correct a tackle opportunity. That is why the purpose of this project is to quickly and quantitatively answer the most common question we ask our teammates and teammates, "What happened, did you see how I missed that tackle?"
+
+
+To answer this question we will create a model with predicting features that are easy to interpret and correlate to coaching points of tackling. Then we will be able to preform feature analysis of an individual tackle opportunity to determine the features or coaching points that influenced the result of that tackle oppurtunity.  
+
+When quantifying tangible aspects a player does or does not do well it is easy to get excited about the potential analysis from there. The additional analysis of this project will 1. demonstrate the practical accuracy of the model and 2. provide examples that suggest the wide spread potential of this model for player evaluation.
+
+
+```{r}
+rm(list = ls())
+# These lines load packages
+library(caret)
+library(randomForest)
+library(gbm)
+library(DALEX)
+library(pROC)
+library(AppliedPredictiveModeling)
+library(tidyverse)
+library(performanceEstimation)
+library(glmnet)
+library(auditor)
+```
+
+The model will consist of data from two points during the play, the frame before a defender makes contact with the ball carrier, and the frame as the defender makes contact with the ball carrier. First we must find the frame at which a defender makes contact. With a sample data set of tracking data the distance from ball carrier-`dist_from_bc` was calculated for all players at each frame. The data was filtered for `event` == "first_contact". This is the point during a play in which a defender first makes contact and the only `event` in the data that id a defender making contact with the ball carrier. We will use this event to find estimate distance from the ball carrier PFF identifies as "made contact"
+
+```{r}
+first_contact_players_df <- read.csv('first_contact_players_df.csv')
+```
+
+```{r}
+first_contact_players_df %>% ggplot() + geom_boxplot(aes(x = dist_from_bc))+xlim(0,2)
+```
+
+```{r}
+#filtering our some that are clearly errors is labeling
+first_contact_players_df %>% filter(dist_from_bc <2.5) %>% select(dist_from_bc) %>% summary()
+```
+
+The Mean `dist_from_bc` on all instances PFF signifies a defender making contact is .93. We will round this to 1 for simplicity. To most of our audience, a non-data science person, explaining "our model will consider a defender in contact when the tackler and ball carrier's trackers are 1 yard apart" is simple and easy to grasp.
+
+When a tackler is 1 yard from the ball carrier we will consider this frame **"Frame of Contact"** the frame immediately before will be considered **"Frame Before Contact"**
+
+### Creating Predictors For Modeling
+
+In this project we will **not** use assisted tackles. For a player to credited with a tackle they must be the solo or primary defender on stopping the ball carrier. Assisted tackles occur if two players contribute "equally" on a tackle. From playing experience we know that being the primary or solo tackler is completely different than equally contributing on a tackle. Assisted tackles require different techniques or in our modeling case different features of importance. Additionally from experience we know that assisted tackles can be a very inconsistent stat. It is an opinion based categorization depending on the statistician at game. For these reasons of potential inconsistency and errors we felt it is best to exclude asisted tackles within our model. We do aknowledge that they are a critical part of defense and player evaluation, but we feel a seperate analysis would have to be done for applications like this project.
+
+say stuff about how defender statistics are relative to ball carrier
+
+Features were selected from both Frame of Tackle and Frame Before Contact. For each tackle opportunity all tracking features of the tackler and ball carrier were normalized and calculated for differences by `tackle_feature` - `ball_carrier_feature`. Features from Frame Of Contact are marked with a `ct` and features from Frame Before Contact are unmarked.
+
+Tracking data was normalized to follow this plot.
+
+![](normalized_o_final.jpg)
+
+```{r}
+df_to_model <- read.csv('df_to_model_total.csv')
+```
+
+```{r}
+df_to_model %>% select(-s_diff_ct,-x_diff_ct,-y_diff_ct,-o, -dir_diff_ct) %>% head()
+
+```
+
+**Frame Before Contact**
+
+`s_diff` - speed difference
+
+`a_diff` - acceleration difference
+
+`x_diff` - x or linear distance apart
+
+`o_diff` - orientation difference
+
+**Frame At Contact**
+
+`x_los_ct` - how far down field when contact is made (relative to Line Of Scrimage)
+
+`y_los_ct` - how far laterally from the center of the field when contact is made
+
+`a_diff_ct` - acceleration difference at contact
+
+`o_diff_ct` - orientation difference at contact
+
+`o_ct` - orientation of defender at contact
+
+### Modeling
+
+```{r}
+test <- read.csv('final_test.csv')
+
+```
+
+```{r}
+rf_model<- readRDS('rf_model_total_Jan6_less.rds')
+rf_explain = DALEX::explain(model = rf_model,
+                            data = test,
+                            y = as.numeric(test$tackle=="1"),
+                            type = "classification",
+                            label = "Random Forest")
+
+
+```
+
+```{r}
+gbm_model <- readRDS('nfl_gbm_model_total_Jan_less.rds')
+gbm_explain = DALEX::explain(model = gbm_model,
+                             data = test,
+                             y = test$tackle==1,
+                             type = "classification",
+                             label = "GradientBoost")
+
+```
+
+
+```{r}
+gbm_perf = DALEX::model_performance(gbm_explain, cutoff = 0.28)
+gbm_perf
+```
+
+
+```{r}
+rf_perf = DALEX::model_performance(rf_explain, cutoff = 0.31)
+rf_perf
+```
+
+```{r}
+library(patchwork)
+p1 = plot(rf_perf, gbm_perf, geom = "roc")
+p2 = plot(rf_perf, gbm_perf, geom = "prc")
+p1 + p2
+```
+
+
+
+
+
+
+
+```{r}
+#rf_mp = DALEX::model_parts(rf_explain,B = 50)
+
+
+#plot(rf_mp, max_vars = 8)
+```
+The features of most important. Number 1 is `y_los_ct`. This is one of two features not in the tacklers control. The goal of this project is to have features that are easy 
+
+##Application 1- AI coaching
+
+add video
+
+```{r}
+frame_of_tackle <- read.csv('frame_of_tackle_opp_w123.csv')
+frame_of_tackle$tackle_oppId<- frame_of_tackle$tackle_oppId + 10000
+#the 1000 was added to the id later to account for pt1 of running a function
+```
+
+```{r}
+frame_of_tackle %>% filter(tackle_oppId == 14791, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+```
+![](24_tackleopp.jpg)
+
+```{r}
+prob_24 = predict(rf_model, newdata =df_to_model[df_to_model$tackle_oppId==14791,], type="prob")[,2]
+
+break_down_24<- DALEX::predict_parts_shap(rf_explain, df_to_model[df_to_model$tackle_oppId==14791,], B=25)
+plot(break_down_24, add_boxplots = FALSE, max_vars = 5) + 
+  ggtitle(paste("Tackle Report for #24: Prob =", round(prob_24,3)))
+```
+
+
+
+
+![](43tackleopp.jpg)
+```{r}
+prob_43 = predict(rf_model, newdata =df_to_model[df_to_model$tackle_oppId==14792,], type="prob")[,2]
+
+break_down_43<- DALEX::predict_parts_shap(rf_explain, df_to_model[df_to_model$tackle_oppId==14792,], B=25)
+plot(break_down_43, add_boxplots = FALSE, max_vars = 5) + 
+  ggtitle(paste("Tackle Report for #43: Prob =", round(prob_43,3)))
+```
+
+
+![](tackle_opp2.jpg)
+
+
+
+```{r}
+prob_2 = predict(rf_model, newdata =df_to_model[df_to_model$tackle_oppId==14790,], type="prob")[,2]
+
+break_down_2<- DALEX::predict_parts_shap(rf_explain, df_to_model[df_to_model$tackle_oppId==14790,], B=25)
+plot(break_down_2, add_boxplots = FALSE, max_vars = 5 ) + 
+  ggtitle(paste("Tackle Report for #2: Prob =", round(prob_2,3)))
+```
+
+
+
+
+##analyize players overall 
+
+```{r}
+tackle_prob_sum_s <- read.csv('tackle_prob_summary_s.csv')
+```
+
+```{r}
+head(tackle_prob_sum_s)
+```
+
+
+
+```{r}
+safety_df <- read.csv('tackle_prob_summary_s.csv')
+```
+
+
+```{r}
+safety_df %>% select(tackle_perc, displayName, n, tackles, missed_tackles) %>% filter(tackle_perc<.70)
+```
+
+
+```{r}
+frame_of_tackle_opp_total <- read.csv('frame_of_tackle_opp_total.csv')
+poyer_df <- read.csv('poyer_df.csv')
+pitre_df <- read.csv('petire_df.csv')
+scott_df <- read.csv('scott_df.csv')
+```
+
+
+```{r}
+library(ggthemes)
+
+tackle_prob <- .616 + poyer_df %>% select(contributions) %>% sum()
+poyer_df%>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ ggtitle(paste("Jordan Poyer Tackle Report Summary \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+```
+
+
+
+
+```{r}
+poyer_tackles<- frame_of_tackle_opp_total%>% filter(displayName == 'Jordan Poyer', had_tackle_opp ==1)%>% pull(tackle_oppId)
+ggplot() + geom_boxplot(data = df_to_model, aes(x = s_diff, y = tackle_oppId %in% poyer_tackles ))+ xlim(-2.5,2.5)
+```
+
+
+
+
+```{r}
+
+tackle_prob <- .616 + pitre_df %>% select(contributions) %>% sum()
+pitre_df%>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ theme_calc()+ ggtitle(paste("Jalen Pitre Tackle Report Summary \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+```
+```{r}
+pitre_tackles<- frame_of_tackle_opp_total%>% filter(displayName == 'Jalen Pitre', had_tackle_opp ==1)%>% pull(tackle_oppId)
+ggplot() + geom_boxplot(data = df_to_model, aes(x = a_diff, y = tackle_oppId %in% pitre_tackles ))+ xlim(-2.5,2.5)
+```
+
+
+
+
+```{r}
+
+tackle_prob <- .616 + scott_df %>% select(contributions) %>% sum()
+scott_df%>% ggplot( aes( x = variables, y = contributions, fill = positive)) + geom_bar(stat = "identity")+geom_col() +
+  geom_text(aes(y = contributions/2, label = round(contributions,3)), colour = "black")+ theme_calc()+ ggtitle(paste("Nick Scott Tackle Report Summary \n - Avgerage Tackle Probability", round(tackle_prob,3)))+ theme(legend.position = "none")
+```
+```{r}
+scott_tackles<- frame_of_tackle_opp_total%>% filter(displayName == 'Nick Scott', had_tackle_opp ==1)%>% pull(tackle_oppId)
+ggplot() + geom_boxplot(data = df_to_model, aes(x = a_diff, y = tackle_oppId %in% scott_tackles ))+ xlim(-2.5,2.5)
+```
