@@ -10,11 +10,11 @@
   url: /Resume/
 - title: CV
   url: /CV/
-- title: NFL Tackling Evaluation Folder
+#- title: NFL Tackling Evaluation Folder
   url: /NFL-Tackling-Evaluation-Folder/
-- title: More
+#- title: More
 
-  sublinks:
-    - title: FAQ
-      url: /faq/
+ # sublinks:
+  #  - title: FAQ
+   #   url: /faq/
   
