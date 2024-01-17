@@ -152,11 +152,13 @@ The Random Forrest Model has a **83.1% accuracy**.
 ### **Model Comparison**
 
 ```{r}
-library(patchwork)
-p1 = plot(rf_perf, gbm_perf, geom = "roc")
-p2 = plot(rf_perf, gbm_perf, geom = "prc")
-p1 + p2
+#library(patchwork)
+#p1 = plot(rf_perf, gbm_perf, geom = "roc")
+#p2 = plot(rf_perf, gbm_perf, geom = "prc")
+#p1 + p2
 ```
+
+![](images/roc_curve_img.png)
 
 Random Forrest appears to have a slightly better ROC and Precision Recall, along with better accuracy we chose to use our Random Forrest model for application.
 
@@ -212,7 +214,7 @@ Our **Example Analysis** will be [this run by D'Andre Swift from week 1 of the 2
 ### **Tackle Attempt 2 - #43 Kyzir White: Result - Missed**
 
 ```{r}
-frame_of_tackle %>% filter(tackle_oppId == 14792, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+#frame_of_tackle %>% filter(tackle_oppId == 14792, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
 ```
 
 ![](images/white_name.png)
@@ -227,7 +229,7 @@ frame_of_tackle %>% filter(tackle_oppId == 14792, had_tackle_opp ==1) %>% select
 
 ![](images/43_tackle_film.png)
 
-![](images/Screenshot 2024-01-08 123549.jpg)
+![](images/Screenshot%202024-01-08%20123549.jpg)
 
 #### **Coaching Points**
 
@@ -292,8 +294,10 @@ If "the best defenses are the best tacklers" not only does a team need to take s
 We will analyze Jalen Pitre who has 19 missed tackles and the lowest successfull tackle rate of 64% and Nick Scott who has 9 missed tackles and the 3rd worst successful tackle rate of 69%.
 
 ```{r}
-safety_df %>% select(tackle_perc, displayName, n, tackles, missed_tackles) %>% filter(displayName == 'Jordan Poyer')
+#safety_df %>% select(tackle_perc, displayName, n, tackles, missed_tackles) %>% filter(displayName == 'Jordan Poyer')
 ```
+
+![](images/poyer_name_img.png)
 
 To also analyze a good tackler we will also 2022 All-Pro Safety Jordan Poyer who only has 3 missed tackles and a successful tackle rate of 83%.
 
@@ -333,7 +337,7 @@ Our model shows why Poyer has a high tackle rate with almost all positive contri
 
 Jordan Poyer shows great technique in tackling, he takes good angles with good body positioning. The only negative features about Jordan Poyers tackling is his speed and acceleration. In both of these categories Jordan Poyer is below the NFL average meaning that Jordan Poyer goes into tackles too slow and not accelerating enough.
 
-#### [**Poyer Draft Scouting report** ](https://bleacherreport.com/articles/1612892-jordan-poyer-scouting-report-nfl-outlook-for-oregon-state-cb)
+#### [**Poyer Draft Scouting report**](https://bleacherreport.com/articles/1612892-jordan-poyer-scouting-report-nfl-outlook-for-oregon-state-cb)
 
 "Poyer isn't the type of [player] to charge into the middle of the action and blow up a play, but he takes correct angles and puts himself in position to make a play as the last line of defense", "While he isn't exactly eager to take on the ball-carrier, Poyer will step up when needed. He consistently shows correct form and avoids lazy arm tackles"
 
