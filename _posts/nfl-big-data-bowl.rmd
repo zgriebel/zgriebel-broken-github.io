@@ -87,9 +87,11 @@ Features were selected from both **Frame of Tackle** and **Frame Before Contact*
 `o_ct` - orientation of defender at contact - This is the defenders shoulder angle - the value of this feature will not provide meaningful context, a still picture and basic recolection of the play will provide context
 
 ```{r}
-df_to_model <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/df_to_model_total.csv')
-df_to_model %>% select(-s_diff_ct,-x_diff_ct,-y_diff_ct,-o, -dir_diff_ct) %>% head()
+#df_to_model <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/df_to_model_total.csv')
+#df_to_model %>% select(-s_diff_ct,-x_diff_ct,-y_diff_ct,-o, -dir_diff_ct) %>% head()
 ```
+
+![](images/df_to_model_img.png)
 
 ## **Modeling**
 
@@ -102,44 +104,48 @@ library(gbm)
 library(DALEX)
 library(AppliedPredictiveModeling)
 #this is the test data from our modeling notebook
-test <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/final_test.csv')
+#test <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/final_test.csv')
 ```
 
 ### **Gradient Boost Model**
 
 ```{r}
-gbm_model <- readRDS('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/nfl_gbm_model_total_Jan_less.rds')
-gbm_explain = DALEX::explain(model = gbm_model,
-                             data = test,
-                             y = test$tackle==1,
-                             type = "classification",
-                             label = "GradientBoost")
+#gbm_model <- readRDS('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/nfl_gbm_model_total_Jan_less.rds')
+#gbm_explain = DALEX::explain(model = gbm_model,
+                             #data = test,
+                             #y = test$tackle==1,
+                             #type = "classification",
+                             #label = "GradientBoost")
 ```
 
 ```{r}
 #cutoff optomized in seperate notebook
-gbm_perf = DALEX::model_performance(gbm_explain, cutoff = 0.28)
-gbm_perf
+#gbm_perf = DALEX::model_performance(gbm_explain, cutoff = 0.28)
+#gbm_perf
 ```
+
+![](images/gbm_perf.png)
 
 The Gradient Boosted Model has an **82.2% accuracy**.
 
 ### **Random Forrest Model**
 
 ```{r}
-rf_model<- readRDS('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/rf_model_total_Jan6_less.rds')
-rf_explain = DALEX::explain(model = rf_model,
-                            data = test,
-                            y = as.numeric(test$tackle=="1"),
-                            type = "classification",
-                            label = "Random Forest")
+#rf_model<- readRDS('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/rf_model_total_Jan6_less.rds')
+#rf_explain = DALEX::explain(model = rf_model,
+                            #data = test,
+                            #y = as.numeric(test$tackle=="1"),
+                            #type = "classification",
+                            #label = "Random Forest")
 ```
 
 ```{r}
 #cutoff optomized in seperate notebook
-rf_perf = DALEX::model_performance(rf_explain, cutoff = 0.31)
-rf_perf
+#rf_perf = DALEX::model_performance(rf_explain, cutoff = 0.31)
+#rf_perf
 ```
+
+![](images/rf_perf.png)
 
 The Random Forrest Model has a **83.1% accuracy**.
 
@@ -171,15 +177,18 @@ Our **Example Analysis** will be [this run by D'Andre Swift from week 1 of the 2
 ### **Tackle Attempt 1 - #24 James Bradbury: Result - Missed**
 
 ```{r}
-frame_of_tackle <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/frame_of_tackle_opp_total.csv')
-frame_of_tackle %>% filter(tackle_oppId == 14791, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+#frame_of_tackle <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/frame_of_tackle_opp_total.csv')
+#frame_of_tackle %>% filter(tackle_oppId == 14791, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
 ```
+
+![](images/bradberry_name.png)
 
 ```{r}
 #prob_24 = predict(rf_model, newdata =df_to_model[df_to_model$tackle_oppId==14791,], type="prob")[,2]
 #break_down_24<- DALEX::predict_parts_shap(rf_explain, df_to_model[df_to_model$tackle_oppId==14791,], B=25)
 #plot(break_down_24, add_boxplots = FALSE, max_vars = 5) + 
   #ggtitle(paste("Tackle Report for #24: Prob =", round(prob_24,3)))
+
 ```
 
 ![](images/24_tackle_film.png)
@@ -205,6 +214,8 @@ frame_of_tackle %>% filter(tackle_oppId == 14791, had_tackle_opp ==1) %>% select
 ```{r}
 frame_of_tackle %>% filter(tackle_oppId == 14792, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
 ```
+
+![](images/white_name.png)
 
 ```{r}
 #prob_43 = predict(rf_model, newdata =df_to_model[df_to_model$tackle_oppId==14792,], type="prob")[,2]
@@ -233,13 +244,15 @@ linkcode
 ### **Tackle Attempt 3 - #2 Darius Slay: Result - Tackle**
 
 ```{r}
-frame_of_tackle %>% filter(tackle_oppId == 14790, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
+#frame_of_tackle %>% filter(tackle_oppId == 14790, had_tackle_opp ==1) %>% select(tackle_oppId, displayName, jerseyNumber, tackle)
 #prob_2 = predict(rf_model, newdata =df_to_model[df_to_model$tackle_oppId==14790,], type="prob")[,2]
 
 #break_down_2<- DALEX::predict_parts_shap(rf_explain, df_to_model[df_to_model$tackle_oppId==14790,], B=25)
 #plot(break_down_2, add_boxplots = FALSE, max_vars = 5 ) + 
   #ggtitle(paste("Tackle Report for #2: Prob =", round(prob_2,3)))
 ```
+
+![](images/slay_name.png)
 
 ![](images/2_tackl_film.png)
 
@@ -253,8 +266,6 @@ frame_of_tackle %>% filter(tackle_oppId == 14790, had_tackle_opp ==1) %>% select
 
 -   Model recognized the high probabilty of a tackle that actually did lead to a tackle.
 
-linkcode
-
 ### **Application 1 - Conclusion**
 
 Hopefully by now it is clear, on an individual tackle attempt our model correctly identifies the coaching points that lead to a made or missed tackle. In-game when it is difficult to recieve correct tackling coaching this model could provide valuable feedback to make corrections that will improve defenders play and safety.
@@ -265,8 +276,6 @@ Hopefully by now it is clear, on an individual tackle attempt our model correctl
 
 Not only would a report like this improve the quality of play it would enhance the broadcasts as well. Muct like the "catch probabilty metric" a tackle grade would be an exciting new metric while also providing context and insight about quality defensive football. This would also teach the techniques and importance of skillful defensive play for youth plays as well.
 
-linkcode
-
 ## **Application 2 - Overall Defender Tackle Analysis**
 
 If "the best defenses are the best tacklers" not only does a team need to take steps to always improve their tackling, they also need to find the best tacklers to get on their team. Application 1 proved that our model correctly identifies the characteristics that lead to each made or missed tackles on an individual basis. Now taking a cumulation of all tackle attempts we can help identify strengths and weaknesses to rank and score tackling ability of defenders. This notebook will take some examples to demonstrate the accuracy of this application to then suggest the widespread potential from identifing where a player needs to improve to player evalautions and the NFL draft.
@@ -274,9 +283,11 @@ If "the best defenses are the best tacklers" not only does a team need to take s
 ### **We will take a data set of all safeties and identify the some with a lot of missed tackles**
 
 ```{r}
-safety_df <- read.csv('/kaggle/input/safety-summary/tackle_prob_summary_s.csv')
-safety_df %>% select(tackle_perc, displayName, n, tackles, missed_tackles) %>% filter(tackle_perc<.70)
+#safety_df <- read.csv('/kaggle/input/safety-summary/tackle_prob_summary_s.csv')
+#safety_df %>% select(tackle_perc, displayName, n, tackles, missed_tackles) %>% filter(tackle_perc<.70)
 ```
+
+![](images/bad_tacklers_df_img.png)
 
 We will analyze Jalen Pitre who has 19 missed tackles and the lowest successfull tackle rate of 64% and Nick Scott who has 9 missed tackles and the 3rd worst successful tackle rate of 69%.
 
