@@ -444,3 +444,7 @@ When cumulating all contributions our model correctly identified strength and we
 ## **Conclusion**
 
 Tackle probabilty is an exciting metric to add to broadcasts and evaluate players. The application demonstrations of our model suggest that this tool could be utilized by the NFL in a variety of different applications improving in-game play, overall player development and safety, and player evaluation.
+
+Please check out the rest of r markdowns for all of the work from this project.
+
+[Prep Tracking](./portfolio_zg/_NFL-Tackling-Evaluation-Folder/prep_tracking.html)
