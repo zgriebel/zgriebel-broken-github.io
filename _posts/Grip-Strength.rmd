@@ -13,11 +13,11 @@ Grip-Strength is a measurable that is used in medical diagnoses and analysis in 
 
 A protocol using a Dynamometer measures grip-strength.
 
-![](/images/dynomometer.jpg)
+![](images/dynomometer.jpg)
 
 Grip-Strength results are compared to the AMA normative values to determine deviation from normal. The normative values were determined in 1970 and use just one feature; age, to stratify the normative values.
 
-![](/images/ama_study.jpg)
+![](images/ama_study.jpg)
 
 ### Thesis
 
@@ -29,9 +29,9 @@ Evaluating strength loss from an injury is how work compensation claims are valu
 
 The example case of a evaluation is two 28 year old males with different body types and backgrounds. A non-injured Sedentary worker and an injured manual laborer. The American Medical Association determines the normative grip strength is 48.5Kg for males in the 20-30 age range.
 
-![](~/portfolio_zg/_grip_strength/ama_28yrsold.jpg)
+![](images/ama_28yrsold.jpg)
 
-![](~/portfolio_zg/_grip_strength/Screenshot%202023-12-05%20083540.jpg)
+![](images/Screenshot%202023-12-05%20083540.jpg)
 
 In this scenario the sedentary worker is incorrectly diagnosed as **Injured.** This could prompt wasted resources attempting to diagnose the injury. This additionally would lead to wrongfully receiving work injury compensation for an injury that does not occur. Conversely, the manual laborer has a permanent injury and strength loss that will effect him the rest of his life. Due to inadequate data from the American Medical Association this laborer will not receive proper assistance because he is incorrectly identified as **Non-Injured**.
 
@@ -56,7 +56,7 @@ Data was further cleaned and modeled using Subset Selection to find the most rel
 
 ```
 
-![](/images/feature_selection.jpg)
+![](images/feature_selection.jpg)
 
 It was found the best predicting Variables in order are:
 
@@ -72,7 +72,7 @@ It was found the best predicting Variables in order are:
 
 Age is **not** the first feature selected by the model, and there are additional features that significantly increase accuracy.
 
-![](/images/4_features.jpg)
+![](images/4_features.jpg)
 
 The four features above that are not `Age` have positive correlations with grip-strength and backs up the claim that there are other features related to grip-strength.
 
@@ -104,7 +104,7 @@ library(patchwork)
 #p1+p2/p3
 ```
 
-![](~/portfolio_zg/_grip_strength/p1-2-3.png)
+![](images/p1-2-3.png)
 
 Height, BMI and Waist measurement all have positive correlation with Grip-Strength
 
@@ -112,7 +112,7 @@ Height, BMI and Waist measurement all have positive correlation with Grip-Streng
 #p4+p6/p7
 ```
 
-![](~/portfolio_zg/_grip_strength/p4-5-6.png)
+![](images/p4-5-6.png)
 
 Within the dense part of these graphs Pulse, Body Fat Percent and Age have negative correlations with Grip-Strength.
 
@@ -120,7 +120,7 @@ We can see there are other variables that are related to grip-strength and utili
 
 #### Specific Predicting Ability
 
-When stratifying by age group and utilizing multiple features, models can predict grip-strength far more accurately. Above 60 years of age was used in the below graph because the most complete and largest data is a senior population data set.![](~/portfolio_zg/_grip_strength/60prediction.jpg)
+When stratifying by age group and utilizing multiple features, models can predict grip-strength far more accurately. Above 60 years of age was used in the below graph because the most complete and largest data is a senior population dataset. ![](images/60prediction.jpg)
 
 The goal of this model was to analyze feature selection and the benefits of adding features other than age. Age once again was second to a body length measurement. And adding body composition statistics significantly raised our RSQ that suggests with some more work a model could get relatively accurate predictions.
 
@@ -132,17 +132,17 @@ Age may not be the best singular predictor for grip-strength and there are multi
 
 **- In the last 50 years the average human body has changed**
 
-![](~/portfolio_zg/_grip_strength/1970.jpg)
+![](images/1970.jpg)
 
 We have all heard that technology has changed the average American body. As a population we have less manual jobs, obesity is far higher and our postures have been altered. The AMA study that defines normative grip strength was from 1970, over half a century ago. So the question needs to be asked, have humans developed enough that the AMA normative values are outdated?
 
 #### Data Analysis
 
-![With such large sample size confidence intervals are not visible.](~/portfolio_zg/_grip_strength/Men_overtime.jpg)
+![With such large sample size confidence intervals are not visible.](images/Men_overtime.jpg)
 
 The average grip strength for this population from 1970 is higher than 2014. This aligns with the hypothesis that Americans have begun working less manual jobs along with less physical activity and have consequently become weaker.
 
-![Again, with a large sample size confidence intervals are minuscule.](~/portfolio_zg/_grip_strength/women_overtime.jpg)
+![Again, with a large sample size confidence intervals are minuscule.](images/women_overtime.jpg)
 
 In general women in 2014 are stronger than women in 1970. Socially there has been a clear shift in gender roles from 1970 to today society and this could be one explanation for the distinction. As for the spike in 1970 ages 30-39. The scope of this study is not focused on causes of the anomaly, and more research would need to be done.
 

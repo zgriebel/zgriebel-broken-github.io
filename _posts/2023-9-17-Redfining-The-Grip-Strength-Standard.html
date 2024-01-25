@@ -114,9 +114,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="how-are-grip-strength-results-evaluated" class="level3">
 <h3 class="anchored" data-anchor-id="how-are-grip-strength-results-evaluated">How are grip-strength results evaluated?</h3>
 <p>A protocol using a Dynamometer measures grip-strength.</p>
-<p><img src="/images/dynomometer.jpg" class="img-fluid"></p>
+<p><img src="images/dynomometer.jpg" class="img-fluid"></p>
 <p>Grip-Strength results are compared to the AMA normative values to determine deviation from normal. The normative values were determined in 1970 and use just one feature; age, to stratify the normative values.</p>
-<p><img src="/images/ama_study.jpg" class="img-fluid"></p>
+<p><img src="images/ama_study.jpg" class="img-fluid"></p>
 </section>
 <section id="thesis" class="level3">
 <h3 class="anchored" data-anchor-id="thesis">Thesis</h3>
@@ -126,8 +126,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="misevaluation-example">Misevaluation Example</h3>
 <p>Evaluating strength loss from an injury is how work compensation claims are valued. This claim is how injured workers can for their medical bills, make up for lost wages and can be compensated for permanent impairment. As stated above these claims have serious financial implications behind them.</p>
 <p>The example case of a evaluation is two 28 year old males with different body types and backgrounds. A non-injured Sedentary worker and an injured manual laborer. The American Medical Association determines the normative grip strength is 48.5Kg for males in the 20-30 age range.</p>
-<p><img src="~/portfolio_zg/_grip_strength/ama_28yrsold.jpg" class="img-fluid"></p>
-<p><img src="~/portfolio_zg/_grip_strength/Screenshot%202023-12-05%20083540.jpg" class="img-fluid"></p>
+<p><img src="images/ama_28yrsold.jpg" class="img-fluid"></p>
+<p><img src="images/Screenshot%202023-12-05%20083540.jpg" class="img-fluid"></p>
 <p>In this scenario the sedentary worker is incorrectly diagnosed as <strong>Injured.</strong> This could prompt wasted resources attempting to diagnose the injury. This additionally would lead to wrongfully receiving work injury compensation for an injury that does not occur. Conversely, the manual laborer has a permanent injury and strength loss that will effect him the rest of his life. Due to inadequate data from the American Medical Association this laborer will not receive proper assistance because he is incorrectly identified as <strong>Non-Injured</strong>.</p>
 </section>
 <section id="hypothesis-1" class="level3">
@@ -180,7 +180,7 @@ i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#regfit_full &lt;- regsubsets(DOM_AVG~.,data = men_test)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><img src="/images/feature_selection.jpg" class="img-fluid"></p>
+<p><img src="images/feature_selection.jpg" class="img-fluid"></p>
 <p>It was found the best predicting Variables in order are:</p>
 <ol type="1">
 <li><p>Arm Length</p></li>
@@ -190,7 +190,7 @@ i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all
 <li><p>Systolic Blood Pressure</p></li>
 </ol>
 <p>Age is <strong>not</strong> the first feature selected by the model, and there are additional features that significantly increase accuracy.</p>
-<p><img src="/images/4_features.jpg" class="img-fluid"></p>
+<p><img src="images/4_features.jpg" class="img-fluid"></p>
 <p>The four features above that are not <code>Age</code> have positive correlations with grip-strength and backs up the claim that there are other features related to grip-strength.</p>
 <section id="analyze-correlation-of-other-features-vs-grip-strength" class="level4">
 <h4 class="anchored" data-anchor-id="analyze-correlation-of-other-features-vs-grip-strength">Analyze correlation of other features vs grip-strength</h4>
@@ -217,18 +217,18 @@ i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#p1+p2/p3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><img src="~/portfolio_zg/_grip_strength/p1-2-3.png" class="img-fluid"></p>
+<p><img src="images/p1-2-3.png" class="img-fluid"></p>
 <p>Height, BMI and Waist measurement all have positive correlation with Grip-Strength</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#p4+p6/p7</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><img src="~/portfolio_zg/_grip_strength/p4-5-6.png" class="img-fluid"></p>
+<p><img src="images/p4-5-6.png" class="img-fluid"></p>
 <p>Within the dense part of these graphs Pulse, Body Fat Percent and Age have negative correlations with Grip-Strength.</p>
 <p>We can see there are other variables that are related to grip-strength and utilizing more than just <code>age</code> would help the medical community diagnose more accuratley.</p>
 </section>
 <section id="specific-predicting-ability" class="level4">
 <h4 class="anchored" data-anchor-id="specific-predicting-ability">Specific Predicting Ability</h4>
-<p>When stratifying by age group and utilizing multiple features, models can predict grip-strength far more accurately. Above 60 years of age was used in the below graph because the most complete and largest data is a senior population data set.<img src="~/portfolio_zg/_grip_strength/60prediction.jpg" class="img-fluid"></p>
+<p>When stratifying by age group and utilizing multiple features, models can predict grip-strength far more accurately. Above 60 years of age was used in the below graph because the most complete and largest data is a senior population dataset. <img src="images/60prediction.jpg" class="img-fluid"></p>
 <p>The goal of this model was to analyze feature selection and the benefits of adding features other than age. Age once again was second to a body length measurement. And adding body composition statistics significantly raised our RSQ that suggests with some more work a model could get relatively accurate predictions.</p>
 </section>
 <section id="conclusion-on-hypothesis---1" class="level4">
@@ -239,20 +239,20 @@ i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all
 <section id="hypothesis-2" class="level3">
 <h3 class="anchored" data-anchor-id="hypothesis-2">Hypothesis 2</h3>
 <p><strong>- In the last 50 years the average human body has changed</strong></p>
-<p><img src="~/portfolio_zg/_grip_strength/1970.jpg" class="img-fluid"></p>
+<p><img src="images/1970.jpg" class="img-fluid"></p>
 <p>We have all heard that technology has changed the average American body. As a population we have less manual jobs, obesity is far higher and our postures have been altered. The AMA study that defines normative grip strength was from 1970, over half a century ago. So the question needs to be asked, have humans developed enough that the AMA normative values are outdated?</p>
 <section id="data-analysis" class="level4">
 <h4 class="anchored" data-anchor-id="data-analysis">Data Analysis</h4>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="~/portfolio_zg/_grip_strength/Men_overtime.jpg" class="img-fluid figure-img"></p>
+<p><img src="images/Men_overtime.jpg" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">With such large sample size confidence intervals are not visible.</figcaption>
 </figure>
 </div>
 <p>The average grip strength for this population from 1970 is higher than 2014. This aligns with the hypothesis that Americans have begun working less manual jobs along with less physical activity and have consequently become weaker.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="~/portfolio_zg/_grip_strength/women_overtime.jpg" class="img-fluid figure-img"></p>
+<p><img src="images/women_overtime.jpg" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">Again, with a large sample size confidence intervals are minuscule.</figcaption>
 </figure>
 </div>
