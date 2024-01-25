@@ -1,0 +1,200 @@
+---
+title: "PS 2"
+author: "Zach"
+date: '2023-09-16'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+bikes<- read.csv('C:/Users/zgrib/Desktop/Data mining problem sets/bikes_ps.csv')
+
+```
+
+```{r}
+glimpse(bikes)
+
+
+```
+
+There are 731 rows, this is individual days. Each day has 10 columns or recorded data points about the day. *Date* is type character. *Season, Holiday, Weekday, Weather* and *Rentals* are integers. Then *Temperature, Real Feel, Humidity,* and *Wind speed are type numeric.*
+
+```{r}
+library(lubridate)
+bikes$date <- ymd(bikes$date)
+class(bikes$date)
+
+```
+
+`Date` is in year-month-day format, however is not type date in our data set. This is a package I found online that converts a character already in YMD form to type `<date>`. Now we can analyze `Date` as such. The table below grabs the month from `Date` and shows us what `Season` it is classified in. From this we can tell 1=Winter, 2=Spring, 3=Summer, 4=Fall.
+
+```{r}
+bikes %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  select(season, month) %>%
+  table()
+```
+
+```{r}
+head(bikes)
+
+```
+
+I looked up the day of the week for the `Weekday` . 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
+
+```{r}
+filter(bikes, holiday !=0)
+```
+
+The data has `Holiday` as a 1 when it is a holiday and a 0 for a not holiday. This will be changed to TRUE and FALSE because it is not a numeric value but a conditional value.
+
+```{r}
+library(ggplot2)
+ggplot(bikes,aes(weather))+ geom_bar()
+```
+
+After doing some digging we do not have a codebook for this data to understand what `weather` means. However, we can infer weather probably has quite an influence on bike rentals. For that reason I will keep the `weather` column. Since this is a simple homework assignment I will use it, however if this was an applied practice I would reach out to and do more work to understand the column. These are not numeric values and will be turned into characters to be a categorical variable. *Note* I had to make TRUE and FALSE strings. I could not get mutate to work with logic variables.
+
+```{r}
+bikes = bikes %>%
+  mutate_at(vars(season, holiday, weekday, weather), factor) %>%
+  mutate(season = fct_recode(season, "Winter"="1","Spring"="2","Summer"="3","Fall"="4")) %>% 
+mutate(holiday = fct_recode(holiday, "TRUE"= "1", "FALSE" = "0"))%>% 
+  mutate(weekday = fct_recode(weekday, "Sunday" = "0", "Monday"="1", "Tuesday"="2", "Wednesday"="3", "Thursday"= "4", "Friday"="5", "Saturday"="6"))
+
+bikes$weather<- str(bikes$weather)
+
+```
+
+```{r}
+head(bikes)
+```
+
+The mutations look good!
+
+```{r}
+bikes %>%
+  select(-date) %>%
+  keep(is.numeric) %>%
+  summary()
+```
+
+```{r}
+bikes %>%
+  select(-date) %>%
+  keep(is.factor) %>%
+  summary()
+```
+
+Real feel is the only one with NAs so lets fix that. By replacing with the median.
+
+```{r}
+bikes = bikes %>%
+  mutate(realfeel = ifelse(is.na(realfeel),median(realfeel, na.rm = TRUE),
+                           realfeel))
+```
+
+Lets Understand Rentals
+
+```{r}
+bikes %>% select(rentals) %>% summary()
+```
+
+The lowest day is 22 rentals the Median is 4548 and the max is 8741.
+
+```{r}
+bikes%>% 
+  ggplot(aes(x=rentals))+ geom_histogram(aes(y = after_stat(density)), fill = "#AB0000" )+geom_density()+ labs(title = "Distribution of Daily Bike Rentals",x = "Rentals (count)")
+```
+
+The distribution is tri-model without having many out liars. With this distribution transformation does not need to be done.
+
+We will not check the correlations
+
+```{r}
+library(corrplot)
+bikes %>%
+  keep(is.numeric) %>%
+  cor() %>%
+  corrplot()
+
+```
+
+```{r}
+library(GGally)
+```
+
+```{r}
+bikes %>%
+  keep(is.numeric) %>%
+  ggpairs()
+```
+
+The strong correlation between real feel and temperature demonstrates how temperature is used to calculate real feel. This is an example of multicollinearity and therefore temperature will be dropped from our model. There is some correlation between other weather statistics and a case could be made for multicollinearity, however I will not drop those variables because the correlation is not strong enough.
+
+```{r}
+bikes = bikes %>%
+  mutate(temperature = (temperature - mean(temperature))/sd(temperature))
+
+bikes %>%
+  select(temperature) %>%
+  summary()
+```
+
+Converting all categorical variables into dummy variables
+
+```{r}
+library(dummy)
+bikes_dummies = dummy(bikes, int = TRUE)
+bikes_num = bikes %>% keep(is.numeric)
+bikes = bind_cols(bikes_num, bikes_dummies)
+```
+
+```{r}
+install.packages("gamlr")
+
+```
+
+```{r}
+library(gamlr)
+#take out renals because thats our measured variable and take out temperature as previously stated
+rentals = bikes$rentals
+predictors = as.matrix(select(bikes, -temperature,-rentals))
+predictors = predictors
+  
+
+# estimate model
+cv.model = cv.gamlr(x=predictors, y=rentals)
+plot(cv.model)
+```
+
+```{r}
+betamin = coef(cv.model, select = "min")
+
+```
+
+```{r}
+bikes = bikes %>%
+  mutate(pred = as.numeric(predict(cv.model, predictors)))
+```
+
+```{r}
+bikes %>%
+  ggplot(aes(x=rentals, y=pred)) +
+  geom_point()
+```
+
+I think the features are very applicable to predicting bike rentals. To start the results speak for themselves the model seemed to predict pretty well. Second, common sense would say weather is going to be a large factor in bike rentals and we have multiple features representing that.
+
+Training the data essentially just means we give our model data to make predictions and attempt to find predictions that minimize the amount the model is wrong.
+
+Necessary preparations were fixing variables that needed to be categorical, fixing the NAs.
+
+Preparations not required was looking for co linearity. This was not required but did help us better understand and make a better model. Additionally, rewiriting the categorical variables such as season and day of the week and such, were not completely necessary. They could have been fine without knowing specifically what day of the week it was. The model can only tell that they are all different, it does not care if it is specifically Monday. However understanding that a day was in the winter or a weekday is good to have in the data if we wanted to do more digging.

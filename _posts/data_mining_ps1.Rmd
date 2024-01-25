@@ -1,0 +1,118 @@
+---
+title: |
+  ![](long_logo.png){width=4.5in}  
+  Data Mining: Problem Set 1
+author: Zach Griebel^[**Email** zgriebel01@hamline.edu. **Position** Student  ]
+date: "9/15/2023  "
+output: pdf_document
+fontsize: 12pt
+---
+
+```{=html}
+<!-- 
+In markdown, the dashes, brackets and exclamation points marking the beginning
+and end of this block of text represent comments. They will not be included as
+text or as code in the document you generate. This can be a handy way to leave
+yourself, teammates, coworkers, etc. important information that travels with the
+document without becoming part of the final output. I will use these comment
+blocks to provide directions to you in this assignment.
+-->
+```
+
+```{r setup, include=FALSE}
+rm(list = ls())
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+# You may need to run: install.packages("tidyverse")
+# before loading the library.
+library(tidyverse)
+```
+
+```{=html}
+<!-- The paragraph below is written as a "block quote" as a sort
+     sort of abstract for the document.
+-->
+```
+> The purpose of this document is to simultaneously analyze data on US crime rates and become more familiar with the syntax and abilities of R-markdown to combine code and analysis in a progressional document. Blockquotes look better in HTML typically, but you can see their general effect in any document. The text is highlighted differently in RStudio so you know its part of the block quote. Also, the margins of the text in the final document are narrower to separate the block quote from normal text.
+
+# The Structure of the Data
+
+```{=html}
+<!-- You are going to discuss the data we are about to analyze.
+  * In the lower-right pane of RStudio, click on the Help tab.
+    In the help tab search box, type in USArrests and hit enter.
+    Read the provided help file.
+  * Write a short paragraph discussing what the data set is about.
+-->
+```
+This data set contains statistics in arrests per 100,000 residents for assault,murder,and rape in each of the 50 US states in 1973. There is also statistics about percent of population living in Urban Areas. The purpose of percent population is to normalize the data to be able to make direct comparisons. This data is from the World Almanac and Book of facts 1975.
+
+```{r include=FALSE}
+# Make sure that neither the code nor any of its
+# output is included in the final document.
+
+# Load the data into memory
+data(USArrests)
+```
+
+```{r echo=FALSE}
+# Make sure the code is NOT included, but that the
+# output of the code is included in the final document.
+# Print out information about the "structure" of the dataset.
+print(str(USArrests))
+```
+
+The data set has 50 observations with 4 columns. These columns are `Murder`, `Assault`, `UrbanPop`, and `Rape`. The `Murder` and `Rape` variables are a numeric data type. The `Assault` and `UrbanPop` variable are integers.
+
+## Summary of Features
+
+```{r}
+# This code should NOT be included, but its output should be.
+knitr::kable(summary(USArrests))
+```
+
+Across all 5o states, the **mean** of the `Murder` variable is 7.79 arrests for murder per 100,000. The **mean** of arrests for `Assualt` is 170.8 per 100,000 people. The **mean** of arrests for `Rape` is 10.10 per 100,000 people. The **mean** of *percent population living in an urban area* is 66%.
+
+```{r}
+library(ggplot2)
+library(tidyr)
+scaled_data = as.data.frame(sapply(USArrests, scale))
+ggplot(gather(scaled_data, cols, value), aes(x = value)) + 
+       geom_histogram(aes(y=..density..), bins = 10) + 
+       geom_density(alpha=.2, fill="#FF6666") +
+       facet_grid(.~cols) +
+       ggtitle("Feature Histograms for the Scaled US Arrests Data")
+```
+It appears there is a slight left skew in the `Rape` Variable and a potential skew in the `Murder` Variable as well.
+
+## Relationships Between Features
+
+```{r fig.cap="Facet Grid of Scatter Plots"}
+plot(USArrests,
+     main="Scatter Plots of Crime Rates and Urban Population")
+```
+
+There is a strong correlation between `Murder` and `Assualt`. This makes sense, Assult is a physical crime same as murder. Then another correlation, while not as strong is `Rape` and `UrbanPop`. As `UrbanPop` increases More Rapes occur. However there are a lot of data points where `UrbanPop` is high, but Rape does not. There are not data points that are the other way around. This suggests that `UrbanPop` being high can correlate to a high amount of `Rape` also low `Rape`. However we can feel confident if there is a low `UrbanPop` there is a very low chance `Rape` is high. 
+
+
+| **Variable** | **Mean**                     |
+|--------------|------------------------------|
+| Murder       | `r mean(USArrests$Murder)`   |
+| Assault      | `r mean(USArrests$Assault)`  |
+| UrbanPop     | `r mean(USArrests$UrbanPop)` |
+| Rape         | `r mean(USArrests$Rape)`     |
+
+# Machine Learning Questions
+
+## What are the 7 basic steps of machine learning?
+1. collect data
+2. prepare data
+3. chose a model 
+4. train the model 
+5. evaluate model
+6. tune the model
+7. make predictions
+## In your own words, please explain the bias-variance tradeoff in supervised machine learning and make sure to include proper terminology.
+Bias does not pay much attention to the training data and can produce vary simple(sometimes too simple of models), Variance relies heavily on the training data, being flexible and models the training data tightly(sometimes to tightly). Errors of variance is the model fits too tightly to the training data that when the model sees new data the variability in the new data does not fit well with the model. 
+
+## Explain, in your own words, why cross-validation is important and useful.
+Cross validation is taking a portion of the available data and NOT using it for the training data. The model is trained on the training data and then the model is evaluated using the data it has not yet seen 
