@@ -5,7 +5,7 @@ date: "2023-12-14"
 output: html_document
 ---
 
-This document tackes in the data frame of tracking data of tackle_opps and produces the dataframe to model
+This document tackles in the data frame of tracking data of tackle_opps and produces the dataframe to model
 
 ```{r}
 rm(list = ls())
@@ -18,18 +18,29 @@ library(readr)
 ```
 
 ```{r}
-df<- read.csv('frame_of_tackle_opp_total.csv')
-contact_df <- read.csv('contact_frame_tackle_opp.csv')
+df<- read.csv('~/nfl_tackling_too_big/frame_of_tackle_opp_total.csv')
+contact_df <- read.csv('~/nfl_tackling_too_big/contact_frame.csv')
 ```
 
 select only the columns we care about
 ```{r}
-contact_df <- contact_df %>% select(tackle_oppId, displayName, x,y,s,a,dis,o, dir)
+df
+```
+
+
+```{r}
+library(stringr)
+contact_df$game_playId = 0
+contact_df$game_playId <- str_c( as.character(contact_df$gameId), as.character(contact_df$playId), sep = '-')
+```
+
+```{r}
+contact_df <- contact_df %>% select(game_playId, displayName, x,y,s,a,dis,o, dir)
 ```
 
 rename
 ```{r}
-colnames(contact_df) <- c('tackle_oppId', 'displayName', 'x_ct','y_ct','s_ct','a_ct','dis_ct','o_ct', 'dir_ct')
+colnames(contact_df) <- c('displayName', 'x_ct','y_ct','s_ct','a_ct','dis_ct','o_ct', 'dir_ct')
 ```
 
 ```{r}

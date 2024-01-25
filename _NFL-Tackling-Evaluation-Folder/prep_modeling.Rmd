@@ -1,0 +1,303 @@
+---
+title: "get_ready_model"
+author: "Zach"
+date: "2023-12-14"
+output: html_document
+---
+
+```{r}
+# * load packages ----
+rm(list = ls())
+library(devtools)
+library(dplyr)
+library(gganimate)
+library(ggforce)
+library(ggplot2)
+library(readr)
+```
+
+This is the tracking data from week 1
+```{r}
+tracking <- read.csv('tracking_with_tacklesDec13.csv')
+```
+
+This is the tackle data from week1
+```{r}
+tackles <- read.csv('tackles.csv')
+```
+
+Ok lets mark who made first contact on a play
+```{r}
+frameId_first_contact <- tracking %>% filter(event == 'first_contact') %>% pull(game_play_frameId)
+frameId_first_contact <- unique(frameId_first_contact)
+#get frameIds all the frames that are listed as "first contact" 
+```
+
+```{r}
+tracking %>% filter(on_defense == 1, is.na(dist_from_bc))
+  
+```
+
+
+```{r}
+frame_table <- data.frame(matrix(ncol = 2, nrow = 0))
+colnames(frame_table) <- c('game_playId', 'nflId')
+counter = 0
+for (frame in frameId_first_contact){
+  counter= counter + 1
+  print(counter)
+  #for every frame that is first contact
+  d_play_data <- tracking %>% filter(game_play_frameId == frame, on_defense == 1)
+  #get tracking data of frame of just defenseive players
+  dis_closest_bc <- min(d_play_data$dist_from_bc)
+  #closest distance to bc
+  row_to_add <- d_play_data %>% filter(dist_from_bc == dis_closest_bc)
+  
+  frame_table <-rbind(frame_table, row_to_add)
+  #add to running table
+}
+#every row in this data set made first contact
+#set marker to 1
+frame_table$made_first_contact <- 1
+#merge this with tracking
+write.csv(frame_table, "first_contact.csv", row.names=FALSE)
+```
+
+```{r}
+frame_table %>% ggplot() + geom_histogram(aes(x= dist_from_bc))
+```
+Ok this shows how far the tackler is when he makes frist contact. 
+
+```{r}
+frame_table %>% ggplot() + geom_boxplot(aes(x= dist_from_bc))
+```
+```{r}
+summary(frame_table$dist_from_bc)
+```
+
+These outliers are likely errors in the data such as stating "first_contact" in the wrong place. I will filter out anything above 2 and say that player did not make first contact. 
+
+```{r}
+frame_table <- frame_table %>% filter(dist_from_bc<2) 
+```
+
+```{r}
+frame_table %>% ggplot() + geom_boxplot(aes(x = dist_from_bc))
+```
+```{r}
+summary(frame_table$dist_from_bc)
+```
+
+```{r}
+frame_table <- read.csv('first_contact.csv')
+```
+
+```{r}
+frame_table %>% select(c('game_playId','made_first_contact' )) %>% merge(tracking, all = TRUE)
+```
+
+```{r}
+write.csv(tracking, "tracking_with_tacklesDec13.csv", row.names=FALSE)
+```
+
+The next step is to define the moment the tackler makes initial contact with the ball carrier. PFF refrence has spotters manually input when first contact of the play occurs. This does introduce human error, but there are strict guidlines on how to define first contact. Above states the player that makes initial contact at median distance of .88 away from ball carrier. We will use this median to find the point that each tackler makes initial contact. This will be the frame at which the tackler is closest to .88
+
+
+First we need to add in who made tackles 
+
+```{r}
+
+tackle_df <- tackles %>% filter(gameId  %in% unique(tracking$gameId), assist == 0, forcedFumble == 0) %>%select('gameId', 'playId', 'nflId', 'tackle', 'pff_missedTackle')
+
+tackle_df$tackle_opp =1
+```
+
+
+```{r}
+tackle_df %>% select(tackle) %>% table() %>% prop.table()
+```
+
+Looks like we have 17% missed tackles and 83% made tackles 
+
+Time to merge with tracking data
+
+
+
+
+```{r}
+#tracking <- tackle_df %>% merge(tracking, all = TRUE)
+write.csv(tracking, "tracking_with_tacklesDec13.csv", row.names=FALSE)
+```
+The number of observations did not change, so this merged correctly! 
+
+Now we want to find the frames that initial contact is made. For the `tackle_opps` that made first contact this is easy, but for the rest we will use the median value
+
+```{r}
+tracking
+```
+
+
+
+
+```{r}
+frame_of_tackle_opp  <- data.frame(matrix(ncol = 30, nrow = 0))
+colnames(frame_of_tackle_opp) <- colnames(tracking)
+counter = 0 
+id = 0
+errors <- c()
+
+for (play in unique(tracking$game_playId )){
+  #for each game id combo
+  counter = counter + 1
+  print(counter)
+  id = 1+ id
+  play_data <- tracking %>% filter(game_playId == play)
+  #each play data 
+  list_of_tacklers <- play_data %>% filter(tackle_opp ==1) %>% pull(nflId)
+  # get all of the players that had a tackle oppurtunity in the play
+  if (length(list_of_tacklers)>0){
+    #if there is a tackler in play
+    list_of_tacklers <- unique(list_of_tacklers)
+    for (tacklerId in list_of_tacklers){
+      id = id+1
+      #for each tackler
+      tackler_data <- play_data %>% filter(nflId == tacklerId)
+      #tackler data
+      if (!('out_of_bounds' %in% unique(tackler_data$event))){
+      if (1 %in% tracking$made_first_contact){
+        #if made first contact is set to 1 this tackler made first contact and that frame will be what we use for tackler_contact_frame
+        tackler_contact_frame <- tackler_data%>% filter(event == 'first_contact') %>% pull(frameId) }
+        
+      else{
+        #if player is not marked for initial contact we need to approximate
+        tackler_data$dev_median <- abs(tackler_data$dist_from_bc - .88)
+        tackler_contact_frame <- tackler_data %>% filter( dev_median == min(tackler_data$dev_median)) %>% pull(frameId)}
+      
+        tackler_frame_data <- play_data %>% filter(frameId == (tackler_contact_frame -1))
+        
+        if (length(tackler_frame_data$nflId)>0){
+        tackler_frame_data$tackle_oppId <- id
+        #the 3 lines below set all tackle data to NA if they are not the tackler         in frame.
+        tackler_frame_data[tackler_frame_data$nflId != tacklerId,]$tackle = NA
+        tackler_frame_data[tackler_frame_data$nflId != tacklerId,]$pff_missedTackle = NA
+        tackler_frame_data[tackler_frame_data$nflId != tacklerId,]$tackle_opp = NA
+        frame_of_tackle_opp <- rbind(frame_of_tackle_opp, tackler_frame_data)}
+        else 
+          errors <- append(errors, play)
+        }
+  }}}
+  
+  
+  
+  
+```
+
+
+
+
+
+
+```{r}
+length(unique(frame_of_tackle_opp$tackle_oppId))
+```
+There are 1181 tackle oppurtunities that we will analyze 
+
+```{r}
+write.csv(frame_of_tackle_opp, "tackle_oppDec13.csv", row.names=FALSE)
+```
+
+Let look at the distance of our tacklers from ball one frame before contact to see if we did calculations right. 
+```{r}
+frame_of_tackle_opp %>% filter(tackle_opp ==1)%>% ggplot() + geom_histogram(aes(x = dist_from_bc))
+```
+Obviously we did some manual calculations, and once again there are probably some errors just within labeling, we will filter those out. 
+
+```{r}
+frame_of_tackle_opp %>% filter(tackle_opp ==1)%>% ggplot() + geom_boxplot(aes(x = dist_from_bc))
+```
+```{r}
+frame_of_tackle_opp %>% filter(tackle_opp ==1)%>% select(dist_from_bc) %>% summary()
+```
+This is really encouraging that we did this properly! Players relatively close one frame before what we believe contact to be. 
+
+```{r}
+frame_of_tackle_opp %>% filter(tackle_opp ==1, dist_from_ball<3.5)%>% ggplot() + geom_boxplot(aes(x = dist_from_bc))
+```
+This removes a lot of our outliers. Will make this permanent, and potentially cut even closer later. 
+
+I know this is not the most efficient, but there were a lot of issues with this step. So we are doing it the long way.Create a list of all the `tackl_oppId`s that are withing 3. 3 seems realistic distance from ball carrier to still make a tackle in the next frame.
+```{r}
+id_keep <- tacklers %>% filter(dist_from_bc <3, tackle_opp == 1) %>% pull(tackle_oppId)
+```
+
+Then filter for only those ids
+```{r}
+frame_of_tackle_opp <- frame_of_tackle_opp %>% filter(tackle_oppId %in% id_keep)
+```
+
+```{r}
+frame_of_tackle_opp %>% filter(tackle_opp ==1)%>% ggplot() + geom_boxplot(aes(x = dist_from_bc))
+```
+This looks as expected. We now have a df of tracking data for the frame before a tackler makes initial contact
+
+```{r}
+write.csv(frame_of_tackle_opp, "tackle_oppDec13.csv", row.names=FALSE)
+```
+
+
+
+```{r}
+df_tackle_opp <- read.csv('tackle_oppDec13.csv')
+```
+
+
+
+next we want a df of just the tackler and relevent statistics to predict if the tackle was made. Right now we will simply grab all of the tracking data. Along with the actual tackle stat
+
+
+```{r}
+df_to_model  <- data.frame(matrix(ncol = 18, nrow = 0))
+colnames(df_to_model) <- colnames(c('tackle_oppId', 'tackle', 'pff_missedTackle', 'playDirection', 'x', 'y', 's', 'a', 'o', 'dir', 'made_first_contact','tackle_oppId', 'x_bc', 'y_bc', 's_bc', 'a_bc', 'o_bc', 'dir_bc' ))
+counter = 0
+
+for( id in unique(df_tackle_opp$tackle_oppId)) {
+  counter = counter +1 
+  print(counter)
+  #for each tackle opp
+  play_data <- df_tackle_opp %>% filter(tackle_oppId == id)
+  #make df
+  tackler_to_add <- play_data %>% filter(tackle_opp == 1) %>%
+    select(tackle_oppId, tackle, pff_missedTackle, playDirection, x, y, s, a, o, dir, made_first_contact)
+  #get tracking and tackle datafor tackler
+  bc_to_add <- play_data %>% filter(has_ball == 1) %>% select(tackle_oppId, x, y, s, a, o, dir)
+  #ball carrier tracking data
+  colnames(bc_to_add) <- c('tackle_oppId', 'x_bc', 'y_bc', 's_bc', 'a_bc', 'o_bc', 'dir_bc')
+  #rename to show this is ball carrier
+  to_add <- merge(tackler_to_add, bc_to_add, all= TRUE)
+  #merge the two
+  df_to_model <- rbind(df_to_model, to_add)
+  #add to df to model
+}
+```
+
+```{r}
+df_to_model[is.na(df_to_model$made_first_contact),]$made_first_contact = 0
+```
+
+
+
+```{r}
+df_to_model
+```
+
+```{r}
+write.csv(df_to_model, "df_to_model.csv", row.names=FALSE)
+```
+
+
+```{r}
+tackle_oppdf <- read.csv('frame_of_tackle_opp.csv'
+                         )
+```
+
+
