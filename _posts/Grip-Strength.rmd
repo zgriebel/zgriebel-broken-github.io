@@ -5,6 +5,11 @@ date: "2023-4-13"
 output: html_document
 ---
 
+---
+title: "Redefining the Grip Strength Standard"
+format: html
+editor: visual
+---
 ## Problem
 
 Grip-Strength is a measurable that is used in medical diagnoses and analysis in a variety of applications. Current literature links grip strength in being a strong indicator with Cardiovascular disease. Higher Grip strength is associated with better mental health and earlier death. And the average cost of hand/finger work injury compensation claims is \$25,904

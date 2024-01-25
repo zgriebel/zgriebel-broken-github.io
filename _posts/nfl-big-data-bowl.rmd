@@ -6,6 +6,11 @@ output:
   html_document: default
   pdf_document: default
 ---
+---
+title: "NFL Tackline Evaluation For Big Data Bowl"
+format: html
+editor: visual
+---
 
 # **Tackle Probability Feature Analysis For Coaching And Evaluation**
 
@@ -17,7 +22,7 @@ To answer this question we will create a model with predicting features that are
 
 When quantifying tangible aspects a player does or does not do well it is easy to get excited about the potential analysis from there. The analysis of this project will 1. demonstrate the practical accuracy of the model and 2. provide examples that suggest the wide spread potential of this model for player evaluation.
 
-![](~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/flowchart.jpg)
+![](images/flowchart.jpg)
 
 ## **Clean**
 
