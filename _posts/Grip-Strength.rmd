@@ -6,11 +6,13 @@ output:
   html_document: default
   pdf_document: default
 ---
+
 ---
 title: "Redefining the Grip Strength Standard"
 format: html
 editor: visual
 ---
+
 ## Problem
 
 Grip-Strength is a measurable that is used in medical diagnoses and analysis in a variety of applications. Current literature links grip strength in being a strong indicator with Cardiovascular disease. Higher Grip strength is associated with better mental health and earlier death. And the average cost of hand/finger work injury compensation claims is \$25,904
@@ -37,7 +39,8 @@ The example case of a evaluation is two 28 year old males with different body ty
 
 ![](images/ama_28yrsold.jpg)
 
-![](images/Screenshot%202023-12-05%20083540.jpg)
+
+![](images/graphic.jpg)
 
 In this scenario the sedentary worker is incorrectly diagnosed as **Injured.** This could prompt wasted resources attempting to diagnose the injury. This additionally would lead to wrongfully receiving work injury compensation for an injury that does not occur. Conversely, the manual laborer has a permanent injury and strength loss that will effect him the rest of his life. Due to inadequate data from the American Medical Association this laborer will not receive proper assistance because he is incorrectly identified as **Non-Injured**.
 
