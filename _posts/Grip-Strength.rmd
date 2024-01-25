@@ -2,9 +2,9 @@
 title: "Redefining the Grip Strength Standard"
 author: "Zach"
 date: "2023-4-13"
-output: html_document
+output:
+  html_document: default
 ---
-
 ---
 title: "Redefining the Grip Strength Standard"
 format: html
