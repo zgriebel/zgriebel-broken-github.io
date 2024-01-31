@@ -25,9 +25,9 @@ permalink: /Awards-and-Achievements/
   - Award Rene and Brian McCoy Research Monarch Scholarship
 
 
-  - MIAC Academic All-Conference 4x.
+  - MIAC Academic All-Conference 4x
 
-  - Elected Hamline Football Captain.
+  - Elected Hamline Football Captain
 
 <figure style="float: right">
 
