@@ -1,5 +1,5 @@
 ---
-title: "Bank Regression Modeling"
+title: "Loan Classification Modeling"
 author: "Zach"
 date: '2023-11-14'
 output:
@@ -8,10 +8,16 @@ output:
 ---
 
 ---
-title: "Problem Set 6"
+title: "Loan Classification Modeling"
 format: html
 editor: visual
 ---
+
+##Objective
+We have a dataset of a group of customers from Universal Bank. Universal Bank wants to find prospective customers to send out loan offers to. They want to be efficient with who they send the offer out to for a few reasons. 1. Universal Bank does a lot of digital offers and advertising, they do their best to avoid spam emails to where offers such as this get lost in an endless stream of communication from them. 2. Universal Bank wants this offer to feel exclusive, they feel making this offer available to only a select few will improve response rate, however they do not want to miss out on potential customers. Finally, Universal Bank does not want to not only avoid spam communication, they just want to be financially efficient with their resources. With the given Data Universal Bank wants a way to analyze current customers without loans and give a list of potential customers most likely to be interested in a loan. 
+
+##Plan
+With the given data set I will train a few classification models to predict which customers have loans. I will then test and analyze performance of the models. The best model will be selected for Universal Bank to take their whole data set of customers without loans to efficiently, find the most likely customers to accept this loan offer.  
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE )
 ```
@@ -40,6 +46,11 @@ bank = read_csv("UniversalBank.csv") %>%
 ```
 
 Below we can check for missing data.
+
+```{r}
+head(bank)
+```
+
 
 ```{r}
 # MISSING DATA

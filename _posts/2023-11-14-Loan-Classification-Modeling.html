@@ -13,7 +13,7 @@
 
 <meta name="date" content="2023-11-14" />
 
-<title>Problem Set 6</title>
+<title>Loan Classification Modeling</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,13 +350,33 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Problem Set 6</h1>
+<h1 class="title toc-ignore">Loan Classification Modeling</h1>
 <h4 class="author">Zach</h4>
 <h4 class="date">2023-11-14</h4>
 
 </div>
 
 
+<p>##Objective We have a dataset of a group of customers from Universal
+Bank. Universal Bank wants to find prospective customers to send out
+loan offers to. They want to be efficient with who they send the offer
+out to for a few reasons. 1. Universal Bank does a lot of digital offers
+and advertising, they do their best to avoid spam emails to where offers
+such as this get lost in an endless stream of communication from them.
+2. Universal Bank wants this offer to feel exclusive, they feel making
+this offer available to only a select few will improve response rate,
+however they do not want to miss out on potential customers. Finally,
+Universal Bank does not want to not only avoid spam communication, they
+just want to be financially efficient with their resources. With the
+given Data Universal Bank wants a way to analyze current customers
+without loans and give a list of potential customers most likely to be
+interested in a loan.</p>
+<p>##Plan With the given data set I will train a few classification
+models to predict which customers have loans. I will then test and
+analyze performance of the models. The best model will be selected for
+Universal Bank to take their whole data set of customers without loans
+to efficiently, find the most likely customers to accept this loan
+offer.</p>
 <pre class="r"><code>rm(list = ls())
 suppressWarnings(library(tidyverse))
 library(caret)
@@ -372,6 +392,17 @@ bank = read_csv(&quot;UniversalBank.csv&quot;) %&gt;%
   mutate(Loan = factor(Loan)) %&gt;%
   mutate_at(vars(Education), .funs = factor)</code></pre>
 <p>Below we can check for missing data.</p>
+<pre class="r"><code>head(bank)</code></pre>
+<pre><code>## # A tibble: 6 x 11
+##     Age Income Family CCAvg Education Mortgage Loan  Securities    CD Online
+##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;        &lt;dbl&gt; &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1    25     49      4   1.6 1                0 0              1     0      0
+## 2    45     34      3   1.5 1                0 0              1     0      0
+## 3    39     11      1   1   1                0 0              0     0      0
+## 4    35    100      1   2.7 2                0 0              0     0      0
+## 5    35     45      4   1   2                0 0              0     0      0
+## 6    37     29      4   0.4 2              155 0              0     0      1
+## # i 1 more variable: CreditCard &lt;dbl&gt;</code></pre>
 <pre class="r"><code># MISSING DATA
 # =============
 # Calculate percent of missing values for features

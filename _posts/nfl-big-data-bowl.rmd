@@ -1,13 +1,13 @@
 ---
 title: "NFL Tackling Evaluation For Big Data Bowl"
-author: "Zach"
+author: "Zach Griebe, Rahim Avery, Charlie Wilson"
 date: '1-8-24'
 output:
   html_document: default
   pdf_document: default
 ---
 ---
-title: "NFL Tackline Evaluation For Big Data Bowl"
+title: "NFL Tackling Evaluation For Big Data Bowl"
 format: html
 editor: visual
 ---
@@ -16,7 +16,7 @@ editor: visual
 
 ## **Introduction**
 
-This group has a unique appreciation and understanding of tackling. All three of us are undergraduate students who play football at our university. Between us we have 60 collegiate starts, over 200 collegiate tackles and definitely a few too many missed tackle as well. Our head coach always says "The best defenses are the best tacklers" and "good defense is how you win football games". However, it is simply not that easy, we spend valuable time in practice and in film breakdown learning and correcting the techniques of tackling. Coaching tackling techniques is one of the most debated aspects of defensive football and it is the coaching topic that players are constantly seeking. However, on game day, typically coaches are occupied with their game day roles like play calls or substitutions to provide correct, meaningful feedback from tackle opportunity. Quality tackling is complex, it often takes a coach or player multiple playbacks of watching film after the game to fully evaluate or correct a tackle opportunity. That is why the purpose of this project is to quickly and quantitatively answer the most common question we ask our teammates and coaches, "What happened, did you see how I missed that tackle?"
+This group has a unique appreciation and understanding of tackling. All three of us are undergraduate students who play football at our university. Between us we have 200 collegiate tackles and definitely a too many missed tackles than we would like to talk about. Our head coach always says "The best defenses are the best tacklers" and "good defense is how you win football games". However, it is simply not that easy, we spend valuable time in practice and in film breakdown learning and correcting the techniques of tackling. Coaching tackling techniques is one of the most debated aspects of defensive football and it is the coaching topic that players are constantly seeking. However, on game day, typically coaches are occupied with their game day roles like play calls or substitutions to provide correct, meaningful feedback from tackle opportunity. Quality tackling is complex, it often takes a coach or player multiple playbacks of watching film after the game to fully evaluate or correct a tackle opportunity. That is why the purpose of this project is to quickly and quantitatively answer the most common question we ask our teammates and coaches, "What happened, did you see how I missed that tackle?"
 
 To answer this question we will create a model with predicting features that are easy to interpret and correlate to coaching points of tackling. Then we will preform feature analysis of an individual tackle opportunity to determine the features or *coaching points* that influenced the result of that tackle oppurtunity.
 
@@ -35,7 +35,8 @@ This data set is a sample of defenders who made first contact and their `dist_fr
 ```{r}
 # These lines load packages
 rm(list = ls())
-library(tidyverse)
+suppressWarnings(
+library(tidyverse))
 first_contact_players_df <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/first_contact_players_df.csv')
 
 first_contact_players_df %>% ggplot() + geom_boxplot(aes(x = dist_from_bc))+xlim(0,2)
@@ -103,11 +104,16 @@ Features were selected from both **Frame of Tackle** and **Frame Before Contact*
 With these simple and easy to interpret predictors we modeled to predict a successful tackle. The purpose of this model is not to correctly predict a the result, but to provide interpretable, correct explanation of why the result occured. For analysis features of positive contribution are the coaching points that player did well and negative contribution are coaching points that a player did not do well.
 
 ```{r}
-library(caret)
-library(randomForest)
-library(gbm)
-library(DALEX)
-library(AppliedPredictiveModeling)
+suppressWarnings(
+library(caret))
+suppressWarnings(
+library(randomForest))
+suppressWarnings(
+library(gbm))
+suppressWarnings(
+library(DALEX))
+suppressWarnings(
+library(AppliedPredictiveModeling))
 #this is the test data from our modeling notebook
 #test <- read.csv('~/portfolio_zg/_NFL-Tackling-Evaluation-Folder/final_test.csv')
 ```
