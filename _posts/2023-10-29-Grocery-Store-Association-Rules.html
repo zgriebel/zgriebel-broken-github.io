@@ -357,9 +357,7 @@ display: none;
 </div>
 
 
-<ol style="list-style-type: decimal">
-<li></li>
-</ol>
+<p>###Problem Set Questions</p>
 <ol style="list-style-type: lower-alpha">
 <li>Actionable would be for example finding that if a patient tests
 positive for a disease, they often test positive for another disease.
@@ -374,56 +372,21 @@ example if it was found that a patient coming in for a broken arm aften
 has COVID. This relationship does not make sense and more research would
 need to be done to understand it.</p>
 <p>At Hamline elementary it would be interesting look at correlations
-between being profficient in skills. For example is math scores are very
+between being proficient in skills. For example is math scores are very
 low. However it has been observed some students are good at math,
 however they struggle with reading the test problems and instructions
 and therefore get rated low in math. Relationships like this could help
-identity additional reasoning on why a student may be struggline and
+identity additional reasoning on why a student may be struggling and
 could direct help in additional areas to attack the root of the
 problem.</p>
-<ol start="3" style="list-style-type: decimal">
-<li>Napkins, beef, curd, butter, pork, coffee, margarine, frankfurter,
-domestic eggs, brown bread</li>
-</ol>
-<p>Min length 3 there are 16 rules Min length 4 there are 0 rules</p>
-<ol start="4" style="list-style-type: decimal">
-<li>6</li>
-</ol>
+<p>##Grocery Store Data Association</p>
 <pre class="r"><code>rm(list = ls())
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 suppressWarnings(
-library(tidyverse))</code></pre>
-<pre><code>## -- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
-## v dplyr     1.1.2     v readr     2.1.4
-## v forcats   1.0.0     v stringr   1.5.1
-## v ggplot2   3.4.4     v tibble    3.2.1
-## v lubridate 1.9.2     v tidyr     1.3.0
-## v purrr     1.0.1     
-## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()
-## i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code>suppressWarnings(
-library(arules))</code></pre>
-<pre><code>## Loading required package: Matrix
-## 
-## Attaching package: &#39;Matrix&#39;
-## 
-## The following objects are masked from &#39;package:tidyr&#39;:
-## 
-##     expand, pack, unpack
-## 
-## 
-## Attaching package: &#39;arules&#39;
-## 
-## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     recode
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     abbreviate, write</code></pre>
-<pre class="r"><code>suppressWarnings(
+library(tidyverse))
+suppressWarnings(
+library(arules))
+suppressWarnings(
 library(arulesViz))</code></pre>
 <pre class="r"><code>df &lt;- read.transactions(&#39;Market_Basket_Optimisation.csv&#39;, sep = &#39;,&#39;)</code></pre>
 <pre class="r"><code>summary(df)</code></pre>
