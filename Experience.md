@@ -30,7 +30,7 @@ Lead medical research to replace grip-strength evaluation with an alternate, rem
 
 Lead author of peer-reviewed [research](https://www.tridhascholars.org/pdfs/a-pilot-study-for-at-home-measurement-of-grip-strength-via-telemedicine-JOCCR-6-S11-1063.pdf) published in Journal of Clinical Cases & Reports, where our statistical analysis combated current grip-strength literature. Model and prototype is statistically classified as "reliable" by the American Medical Association standards.
 
-### <img src="/ratefast_logo.png" width="50" align="left" style="padding:5px"/>  [RateFast](https://www.rate-fast.com/) / Quality Assurance Intern
+### <img src="/ratefast_logo.png" width="50" align="left" style="padding:5px"/> [RateFast](https://www.rate-fast.com/) / Quality Assurance Intern
 
 #### January 2022 - May 2023, Remote
 
@@ -41,3 +41,9 @@ Worked under the head of the marketing department with front end development. As
 <img src="/Hamline_hh_logo.png" width="50" align="left" style="padding:5px"/>
 
 ### **Hamline Elementary /** Tutor and Mentor
+
+#### November  2019 - March 2020,  August 2023 -December 2023, St. Paul
+
+Tutored students individually and in groups. Student-Athlete Mentor for 3rd grade class with learning and behavior delays.
+
+Took students on tours of Hamline University to encourage their pursuit college with the Hamline "Hand-in-Hand" program.
