@@ -16,7 +16,7 @@ permalink: /Awards-and-Achievements/
 
 </figure>
 
-  - Deans List all 8 semesters
+  - Deans List every semesters
   
   - Awarded Fulforf-Karp Physics Scholarship
 
